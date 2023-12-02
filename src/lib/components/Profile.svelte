@@ -15,3 +15,9 @@
 <div class="container">
   <img src={hostImage} alt={hostImageAltText} />
 </div>
+
+<style>
+  .container {
+    display: flex;
+  }
+</style>

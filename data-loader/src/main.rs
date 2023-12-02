@@ -9,7 +9,7 @@ use serde_json;
 #[derive(Debug, Deserialize, Serialize)]
 enum PredictionType {
     Bold,
-    #[serde(rename = "Cool Ranch")]
+    #[serde(rename(deserialize = "Cool Ranch"))]
     CoolRanch,
 }
 
@@ -34,10 +34,12 @@ enum Score {
 struct Prediction {
     year: usize,
     prediction: String,
+    #[serde(rename(deserialize = "Type"))]
     prediction_type: Option<PredictionType>,
     host: Option<Host>,
+    #[serde(rename(deserialize = "Correct"))]
     score: Option<Score>,
-    #[serde(rename = "Correct Eventually")]
+    #[serde(rename(deserialize = "Correct Eventually", serialize = "correct_eventually"))]
     correct_eventually: String,
     details: String,
 }

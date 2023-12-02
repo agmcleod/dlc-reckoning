@@ -2,7 +2,42 @@
   import { Host } from '$lib/types/host';
   import Profile from '$lib/components/Profile.svelte';
   import PredictionDetails from '$lib/components/PredictionDetails.svelte';
-  import { Score } from '$lib/types/prediction';
+  import type { Prediction } from '$lib/types/prediction';
+  import type { PredictionData } from './types';
+  import { PredictionType } from '$lib/types/predictionType'
+
+  export let data: PredictionData;
+
+  const predictionsForYear = data.data[data.lastYear]
+
+  const jeffBold: Prediction[] = []
+  const jeffCoolRanch: Prediction[] = []
+  const christianBold: Prediction[] = []
+  const christianCoolRanch: Prediction[] = []
+  
+  for (const record of predictionsForYear) {
+    if (record.host === Host.Both) {
+      if (record.prediction_type === PredictionType.Bold) {
+        jeffBold.push(record)
+        christianBold.push(record)
+      } else if (record.prediction_type === PredictionType.CoolRanch) {
+        jeffCoolRanch.push(record)
+        christianCoolRanch.push(record)
+      }
+    } else if (record.host === Host.Christian) {
+      if (record.prediction_type === PredictionType.Bold) {
+        christianBold.push(record)
+      } else if (record.prediction_type === PredictionType.CoolRanch) {
+        christianCoolRanch.push(record)
+      }
+    } else if (record.host === Host.Jeff) {
+      if (record.prediction_type === PredictionType.Bold) {
+        jeffBold.push(record)
+      } else if (record.prediction_type === PredictionType.CoolRanch) {
+        jeffCoolRanch.push(record)
+      }
+    }
+  }
 </script>
 
 <svelte:head>
@@ -25,30 +60,18 @@
 </section>
 
 <div class="predictions">
-  <div>
+  <div class="host">
     <Profile host={Host.Jeff} />
     <PredictionDetails
-      boldPredictions={[
-        { details: 'Sony will not release a new console', score: Score.Correct },
-        { details: 'Zelda will tank', score: Score.Incorrect }
-      ]}
-      coolRanchPredictions={[
-        { details: 'Sony will not release a new console', score: Score.Correct },
-        { details: 'Zelda will tank', score: Score.Incorrect }
-      ]}
+      boldPredictions={jeffBold}
+      coolRanchPredictions={jeffCoolRanch}
     />
   </div>
-  <div>
+  <div class="host">
     <Profile host={Host.Christian} />
     <PredictionDetails
-      boldPredictions={[
-        { details: 'Sony will not release a new console', score: Score.Correct },
-        { details: 'Zelda will tank', score: Score.Incorrect }
-      ]}
-      coolRanchPredictions={[
-        { details: 'Sony will not release a new console', score: Score.Correct },
-        { details: 'Zelda will tank', score: Score.Incorrect }
-      ]}
+      boldPredictions={christianBold}
+      coolRanchPredictions={christianCoolRanch}
     />
   </div>
 </div>
@@ -57,6 +80,9 @@
   .predictions {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+  }
+
+  .predictions .host {
+    flex: 1;
   }
 </style>

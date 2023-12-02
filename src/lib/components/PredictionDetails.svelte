@@ -8,13 +8,13 @@
 <h3>Bold</h3>
 <ol>
   {#each boldPredictions as prediction}
-    <li>{prediction.details}</li>
+    <li>{prediction.prediction}</li>
   {/each}
 </ol>
 
 <h3>Cool Ranch</h3>
 <ol>
   {#each coolRanchPredictions as prediction}
-    <li>{prediction.details}</li>
+    <li>{prediction.prediction}</li>
   {/each}
 </ol>

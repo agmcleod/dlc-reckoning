@@ -1,4 +1,5 @@
 export enum Host {
   Christian,
-  Jeff
+  Jeff,
+  Both
 }
