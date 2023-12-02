@@ -1,6 +1,6 @@
 import type { Prediction } from '$lib/types/prediction'
 
 export interface PredictionData {
-  lastYear: number
+  mostRecentYear: number
   data: { [year: string]: Prediction[] }
 }

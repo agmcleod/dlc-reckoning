@@ -25,7 +25,7 @@ const predictionTypeMap = {
 
 export function load(): PredictionData {
   const predictionData: PredictionData = {
-    lastYear: 0,
+    mostRecentYear: 0,
     data: {}
   }
 
@@ -56,7 +56,7 @@ export function load(): PredictionData {
 
     if (!predictionData.data[recordToAdd.year]) {
       predictionData.data[recordToAdd.year] = []
-      predictionData.lastYear = Math.max(predictionData.lastYear, recordToAdd.year)
+      predictionData.mostRecentYear = Math.max(predictionData.mostRecentYear, recordToAdd.year)
     }
 
     predictionData.data[recordToAdd.year].push(recordToAdd)

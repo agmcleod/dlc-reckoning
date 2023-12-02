@@ -1,50 +1,21 @@
 <script lang="ts">
-  import { Host } from '$lib/types/host';
-  import Profile from '$lib/components/Profile.svelte';
-  import PredictionDetails from '$lib/components/PredictionDetails.svelte';
-  import type { Prediction } from '$lib/types/prediction';
-  import type { PredictionData } from './types';
-  import { PredictionType } from '$lib/types/predictionType'
+  import type { PredictionData } from './types'
+  import PredictionsSection from '$lib/components/PredictionsSection.svelte'
+  import { separatePredictionsList } from '$lib/utils/separatePredictionsList'
 
-  export let data: PredictionData;
+  export let data: PredictionData
 
-  const predictionsForYear = data.data[data.lastYear]
+  const predictionsForYear = data.data[data.mostRecentYear]
 
-  const jeffBold: Prediction[] = []
-  const jeffCoolRanch: Prediction[] = []
-  const christianBold: Prediction[] = []
-  const christianCoolRanch: Prediction[] = []
-  
-  for (const record of predictionsForYear) {
-    if (record.host === Host.Both) {
-      if (record.prediction_type === PredictionType.Bold) {
-        jeffBold.push(record)
-        christianBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        jeffCoolRanch.push(record)
-        christianCoolRanch.push(record)
-      }
-    } else if (record.host === Host.Christian) {
-      if (record.prediction_type === PredictionType.Bold) {
-        christianBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        christianCoolRanch.push(record)
-      }
-    } else if (record.host === Host.Jeff) {
-      if (record.prediction_type === PredictionType.Bold) {
-        jeffBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        jeffCoolRanch.push(record)
-      }
-    }
-  }
+  const { jeffBold, jeffCoolRanch, christianBold, christianCoolRanch } =
+    separatePredictionsList(predictionsForYear)
 </script>
 
 <svelte:head>
-  <title>DLC Reckoning - 2023 Predictions</title>
+  <title>DLC Reckoning - {data.mostRecentYear} Predictions</title>
 </svelte:head>
 
-<h1>2023 Predictions</h1>
+<h1>{data.mostRecentYear} Predictions</h1>
 <section class="description">
   <p>
     The <a href="https://www.patreon.com/dlcpod">DLC</a> video game podcast is a weekly show hosted
@@ -59,30 +30,4 @@
   </p>
 </section>
 
-<div class="predictions">
-  <div class="host">
-    <Profile host={Host.Jeff} />
-    <PredictionDetails
-      boldPredictions={jeffBold}
-      coolRanchPredictions={jeffCoolRanch}
-    />
-  </div>
-  <div class="host">
-    <Profile host={Host.Christian} />
-    <PredictionDetails
-      boldPredictions={christianBold}
-      coolRanchPredictions={christianCoolRanch}
-    />
-  </div>
-</div>
-
-<style>
-  .predictions {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .predictions .host {
-    flex: 1;
-  }
-</style>
+<PredictionsSection {jeffBold} {jeffCoolRanch} {christianBold} {christianCoolRanch} />
