@@ -2,7 +2,14 @@ import { Host } from '$lib/types/host'
 import type { Prediction } from '$lib/types/prediction'
 import { PredictionType } from '$lib/types/predictionType'
 
-export function separatePredictionsList(predictionsForYear: Prediction[]) {
+export interface SeparatedPredictionList {
+  jeffBold: Prediction[]
+  jeffCoolRanch: Prediction[]
+  christianBold: Prediction[]
+  christianCoolRanch: Prediction[]
+}
+
+export function separatePredictionsList(predictionsForYear: Prediction[]): SeparatedPredictionList {
   const jeffBold: Prediction[] = []
   const jeffCoolRanch: Prediction[] = []
   const christianBold: Prediction[] = []

@@ -11,29 +11,19 @@
 </script>
 
 <div class="predictions">
-  <div class="host">
-    <Profile host={Host.Jeff} />
-    <PredictionDetails boldPredictions={jeffBold} coolRanchPredictions={jeffCoolRanch} />
-  </div>
-  <div class="host">
-    <Profile host={Host.Christian} />
-    <PredictionDetails boldPredictions={christianBold} coolRanchPredictions={christianCoolRanch} />
-  </div>
+  <Profile host={Host.Jeff} />
+  <PredictionDetails boldPredictions={jeffBold} coolRanchPredictions={jeffCoolRanch} />
+  <Profile host={Host.Christian} />
+  <PredictionDetails boldPredictions={christianBold} coolRanchPredictions={christianCoolRanch} />
 </div>
 
 <style>
   .predictions {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-  }
-
-  .predictions .host {
-    flex: 1;
-    border: 0.5rem solid var(--accent-color);
-    border-radius: 15px;
-    width: 47%;
-    margin: 0 1rem;
-    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: column;
+    column-gap: 1rem;
+    row-gap: 1rem;
   }
 </style>

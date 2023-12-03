@@ -10,7 +10,7 @@
 
 <nav>
   <div class="container">
-    <img src={logo} alt="Logo for DLC, a video game podcast" />
+    <a href="/"><img src={logo} alt="Logo for DLC, a video game podcast" /></a>
     {#each years as year}
       <a href="/{year}">{year}</a>
     {/each}
@@ -19,12 +19,21 @@
 
 <div class="container">
   <slot />
+
+  <div class="footer">
+    <p>
+      DLC Reckoning is a fan-made, non-official site created by Aaron McLeod. Not affiliated with
+      DLC.
+    </p>
+  </div>
 </div>
 
 <style>
   :global(body) {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 1.2rem;
     margin: 0;
+    color: #333;
   }
 
   :global(:root) {
@@ -55,5 +64,9 @@
     color: var(--accent-color);
     margin-right: 1rem;
     font-size: 1.2rem;
+  }
+
+  .footer p {
+    text-align: center;
   }
 </style>

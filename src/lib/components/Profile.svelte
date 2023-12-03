@@ -5,20 +5,38 @@
 
   export let host: Host
 
-  const hostImage = host === Host.Christian ? christianImage : jeffImage
-  const hostImageAltText =
+  let hostImage: string
+  let hostImageAltText: string
+  let hostName: string
+
+  $: hostImage = host === Host.Christian ? christianImage : jeffImage
+  $: hostImageAltText =
     host === Host.Christian
       ? 'Profile image of Christian Spicer, one of the two hosts of DLC.'
       : 'Profile image of Jeff Cannata, one of the two hosts of DLC.'
+
+  $: hostName =
+    host === Host.Christian ? 'Christian "Spicetradamus" Spicer' : 'Jeff "Cannasticator" Cannata'
 </script>
 
 <div class="container">
+  <h2>{hostName}</h2>
   <img src={hostImage} alt={hostImageAltText} />
 </div>
 
 <style>
   .container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container img {
+    width: 50%;
+    border-radius: 50%;
+  }
+
+  h2 {
+    text-align: center;
   }
 </style>

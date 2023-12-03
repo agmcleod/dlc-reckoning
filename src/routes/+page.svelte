@@ -2,11 +2,22 @@
   import type { PredictionData } from './types'
   import PredictionsSection from '$lib/components/PredictionsSection.svelte'
   import { separatePredictionsList } from '$lib/utils/separatePredictionsList'
+  import type { SeparatedPredictionList } from '$lib/utils/separatePredictionsList'
+  import type { Prediction } from '$lib/types/prediction'
 
   export let data: PredictionData
 
-  const predictionsForYear = data.data[data.mostRecentYear]
+  let predictionsForYear: Prediction[] = []
+  $: predictionsForYear = data.data[data.mostRecentYear]
 
+  let predictionsSet: SeparatedPredictionList = {
+    jeffBold: [],
+    jeffCoolRanch: [],
+    christianBold: [],
+    christianCoolRanch: []
+  }
+
+  $: predictionsSet = separatePredictionsList(predictionsForYear)
   const { jeffBold, jeffCoolRanch, christianBold, christianCoolRanch } =
     separatePredictionsList(predictionsForYear)
 </script>
@@ -30,4 +41,9 @@
   </p>
 </section>
 
-<PredictionsSection {jeffBold} {jeffCoolRanch} {christianBold} {christianCoolRanch} />
+<PredictionsSection
+  jeffBold={predictionsSet.jeffBold}
+  jeffCoolRanch={predictionsSet.jeffCoolRanch}
+  christianBold={predictionsSet.christianBold}
+  christianCoolRanch={predictionsSet.christianCoolRanch}
+/>
