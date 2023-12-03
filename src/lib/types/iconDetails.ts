@@ -11,8 +11,4 @@ export interface IconDetails {
     name: string
     svg: string
   }
-  remove: {
-    name: string
-    svg: string
-  }
 }
