@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Prediction } from '$lib/types/prediction'
+  import PredictionItem from './PredictionItem.svelte'
 
   export let boldPredictions: Prediction[] = []
   export let coolRanchPredictions: Prediction[] = []
@@ -9,16 +10,16 @@
   <h3>Bold</h3>
   <ol>
     {#each boldPredictions as prediction}
-      <li>{prediction.prediction}</li>
+      <PredictionItem {prediction} />
     {/each}
   </ol>
 </div>
 
 <div class="cool-ranch">
-  <h3><em>Cool</em> Ranch</h3>
+  <h3>Cool Ranch</h3>
   <ol>
     {#each coolRanchPredictions as prediction}
-      <li>{prediction.prediction}</li>
+      <PredictionItem {prediction} isCoolRanch />
     {/each}
   </ol>
 </div>
@@ -38,5 +39,10 @@
   .bold h3,
   .cool-ranch h3 {
     margin-top: 0;
+  }
+
+  ol {
+    list-style: none;
+    padding-left: 0;
   }
 </style>
