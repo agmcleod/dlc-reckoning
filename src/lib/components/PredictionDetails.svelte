@@ -6,7 +6,7 @@
   export let coolRanchPredictions: Prediction[] = []
 </script>
 
-<div class="bold">
+<div class="bold" data-testid="bold-section">
   <h3>Bold</h3>
   <ol>
     {#each boldPredictions as prediction, index}
@@ -15,7 +15,7 @@
   </ol>
 </div>
 
-<div class="cool-ranch">
+<div class="cool-ranch" data-testid="cool-ranch-section">
   <h3>Cool Ranch</h3>
   <ol>
     {#each coolRanchPredictions as prediction, index}

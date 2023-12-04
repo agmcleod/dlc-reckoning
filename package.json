@@ -13,14 +13,19 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-static": "^2.0.3",
     "@sveltejs/kit": "^1.27.4",
+    "@sveltejs/vite-plugin-svelte": "^2.5.3",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/svelte": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-svelte": "^2.30.0",
+    "jsdom": "^23.0.1",
     "prettier": "^3.0.0",
     "prettier-plugin-svelte": "^3.0.0",
     "svelte": "^4.2.7",
@@ -28,7 +33,8 @@
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
     "vite": "^4.4.2",
-    "vitest": "^0.34.0"
+    "vitest": "^0.34.6",
+    "vitest-dom": "^0.1.1"
   },
   "type": "module"
 }
