@@ -9,8 +9,8 @@
 <div class="bold">
   <h3>Bold</h3>
   <ol>
-    {#each boldPredictions as prediction}
-      <PredictionItem {prediction} />
+    {#each boldPredictions as prediction, index}
+      <PredictionItem {prediction} {index} />
     {/each}
   </ol>
 </div>
@@ -18,8 +18,8 @@
 <div class="cool-ranch">
   <h3>Cool Ranch</h3>
   <ol>
-    {#each coolRanchPredictions as prediction}
-      <PredictionItem {prediction} isCoolRanch />
+    {#each coolRanchPredictions as prediction, index}
+      <PredictionItem {prediction} isCoolRanch {index} />
     {/each}
   </ol>
 </div>

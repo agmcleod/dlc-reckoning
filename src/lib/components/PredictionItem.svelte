@@ -6,6 +6,7 @@
 
   export let prediction: Prediction
   export let isCoolRanch = false
+  export let index: number
 
   const descriptions = {
     [Score.Correct]: 'Correct prediction',
@@ -32,28 +33,45 @@
   }
 
   let description = ''
-  let iconName: keyof IconDetails
+  let iconName: keyof IconDetails | null = null
   let iconColor: string = ''
-  $: {
-    if (prediction.score !== null) {
+
+  function setIconDetails() {
+    if (prediction.score === null) {
+      description = ''
+      iconColor = ''
+      iconName = null
+    } else {
       description = descriptions[prediction.score]
       iconName = iconNames[prediction.score] as keyof IconDetails
       iconColor = isCoolRanch ? crIcoNColors[prediction.score] : iconColors[prediction.score]
     }
   }
+
+  // whenever prediction changes, update the variables
+  $: prediction, setIconDetails()
 </script>
 
 <li>
-  {#if iconName}
+  <div class="itemContents">
     <div class="iconWrapper">
-      <Icon name={iconName} fill={iconColor} ariaLabel={description} includeShadow={isCoolRanch} />
+      {#if iconName}
+        <Icon
+          name={iconName}
+          fill={iconColor}
+          ariaLabel={description}
+          includeShadow={isCoolRanch}
+        />
+      {:else}
+        {index + 1}.&nbsp;
+      {/if}
     </div>
-  {/if}
-  {prediction.prediction}
+    {prediction.prediction}
+  </div>
 </li>
 
 <style>
-  li {
+  li .itemContents {
     display: flex;
   }
 </style>
