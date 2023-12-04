@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IconDetails } from '$lib/types/iconDetails'
+  import type { IconDetails, IconData } from '$lib/types/iconDetails'
   export let fill = ''
   export let ariaLabel = ''
   export let includeShadow = false
@@ -20,7 +20,8 @@
     }
   }
 
-  const icon = icons[name]
+  let icon: IconData
+  $: icon = icons[name]
 </script>
 
 <svg

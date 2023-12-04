@@ -18,8 +18,6 @@
   }
 
   $: predictionsSet = separatePredictionsList(predictionsForYear)
-  const { jeffBold, jeffCoolRanch, christianBold, christianCoolRanch } =
-    separatePredictionsList(predictionsForYear)
 </script>
 
 <svelte:head>
