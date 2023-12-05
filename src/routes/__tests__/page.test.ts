@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/svelte'
 import Page from '../+page.svelte'
 import { createPrediction } from '$lib/fixtures/prediction'
 import { PredictionType } from '$lib/types/predictionType'
+import { Host } from '$lib/types/host'
 
 test('renders current year', async () => {
   const { getByText } = render(Page, { data: { mostRecentYear: 2023, data: { 2023: [] } } })
@@ -20,12 +21,12 @@ test('has the disclaimer', async () => {
 
 test('contains predictions', async () => {
   const predictions = [
-    createPrediction(),
-    createPrediction(),
-    createPrediction(),
-    createPrediction({ prediction_type: PredictionType.CoolRanch }),
-    createPrediction({ prediction_type: PredictionType.CoolRanch }),
-    createPrediction({ prediction_type: PredictionType.CoolRanch })
+    createPrediction({ host: Host.Jeff }),
+    createPrediction({ host: Host.Christian }),
+    createPrediction({ host: Host.Christian }),
+    createPrediction({ prediction_type: PredictionType.CoolRanch, host: Host.Jeff }),
+    createPrediction({ prediction_type: PredictionType.CoolRanch, host: Host.Christian }),
+    createPrediction({ prediction_type: PredictionType.CoolRanch, host: Host.Jeff })
   ]
   const { getByText } = render(Page, {
     data: { mostRecentYear: 2023, data: { 2023: predictions } }
