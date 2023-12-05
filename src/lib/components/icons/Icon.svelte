@@ -31,8 +31,11 @@
   width="24"
   {fill}
   aria-label={ariaLabel}
-  class:shadow={includeShadow}>{@html icon.svg}</svg
+  class:shadow={includeShadow}
+  data-testid="icon"
 >
+  {@html icon.svg}
+</svg>
 
 <style>
   svg.shadow {

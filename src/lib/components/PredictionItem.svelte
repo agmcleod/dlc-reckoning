@@ -54,7 +54,7 @@
 
 <li>
   <div class="itemContents">
-    <div class="iconWrapper">
+    <div class="iconWrapper" data-testid="icon-wrapper">
       {#if iconName}
         <Icon
           name={iconName}
