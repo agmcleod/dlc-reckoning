@@ -36,7 +36,7 @@
     if they got <strong>rekt</strong>.
   </p>
   <p>
-    This is a fan made, non-affiliaited site displaying their current predictions, past predictions,
+    This is a fan made, non-affiliated site displaying their current predictions, past predictions,
     and fun stats since they started doing these predictions in 2015.
   </p>
 </section>
