@@ -30,7 +30,7 @@
   }
 
   .cool-ranch {
-    background: #004b95;
+    background: var(--cool-ranch);
     color: white;
     border-radius: 1rem;
     padding: 0.75rem;

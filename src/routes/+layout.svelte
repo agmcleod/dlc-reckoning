@@ -11,6 +11,7 @@
 <nav>
   <div class="container">
     <a href="/"><img src={logo} alt="Logo for DLC, a video game podcast" /></a>
+    <a href="/leaderboard">Leaderboard</a>
     {#each years as year}
       <a href="/{year}">{year}</a>
     {/each}
@@ -23,7 +24,9 @@
   <div class="footer">
     <p>
       DLC Reckoning is a fan-made, non-official site created by Aaron McLeod. Not affiliated with
-      DLC.
+      the DLC Podcast. To learn more and support the podcast, check them out <a
+        href="https://www.patreon.com/dlcpod/posts">here</a
+      >
     </p>
   </div>
 </div>
@@ -38,6 +41,7 @@
 
   :global(:root) {
     --accent-color: #ff841c;
+    --cool-ranch: #004b95;
   }
 
   .container {
