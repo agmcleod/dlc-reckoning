@@ -177,6 +177,10 @@
     padding: 0.25rem;
   }
 
+  .break-down {
+    width: 100%;
+  }
+
   .break-down td,
   .break-down th {
     padding: 0.5rem 0;
