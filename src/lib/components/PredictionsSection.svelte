@@ -26,4 +26,10 @@
     column-gap: 1rem;
     row-gap: 1rem;
   }
+
+  @media screen and (max-width: 600px) {
+    .predictions {
+      display: block;
+    }
+  }
 </style>

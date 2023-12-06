@@ -22,10 +22,12 @@
 
 <h1>Leaderboard</h1>
 
-<p>
-  This is a summary page to show how well our hosts have done over the years in their predictions.
-</p>
-<p>Were they correct, or did they get rekt?</p>
+<section class="description">
+  <p>
+    This is a summary page to show how well our hosts have done over the years in their predictions.
+  </p>
+  <p>Were they correct, or did they get rekt?</p>
+</section>
 
 <div class="leaderboard-container">
   <Profile host={Host.Jeff} />
@@ -149,6 +151,10 @@
 </div>
 
 <style>
+  .description p {
+    text-align: center;
+  }
+
   .leaderboard-container {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -197,5 +203,11 @@
 
   .break-down th {
     text-align: left;
+  }
+
+  @media screen and (max-width: 600px) {
+    .leaderboard-container {
+      display: block;
+    }
   }
 </style>

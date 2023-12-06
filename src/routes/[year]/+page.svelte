@@ -22,12 +22,6 @@
 
 <h1>{data.year} Predictions</h1>
 
-<section class="description">
-  <p>
-    Viewing prediction details for {data.year}.
-  </p>
-</section>
-
 <PredictionsSection
   jeffBold={predictionsSet.jeffBold}
   jeffCoolRanch={predictionsSet.jeffCoolRanch}
