@@ -52,26 +52,99 @@
   $: prediction, setIconDetails()
 </script>
 
-<li>
-  <div class="itemContents">
-    <div class="iconWrapper" data-testid="icon-wrapper">
-      {#if iconName}
-        <Icon
-          name={iconName}
-          fill={iconColor}
-          ariaLabel={description}
-          includeShadow={isCoolRanch}
-        />
-      {:else}
-        {index + 1}.&nbsp;
-      {/if}
-    </div>
-    {prediction.prediction}
+<li class="item-contents">
+  <div class="iconWrapper" data-testid="icon-wrapper">
+    {#if iconName}
+      <Icon name={iconName} fill={iconColor} ariaLabel={description} includeShadow={isCoolRanch} />
+    {:else}
+      {index + 1}.&nbsp;
+    {/if}
   </div>
+  <p>
+    {prediction.prediction}
+    {#if prediction.details}
+      <div class="tooltip-wrapper details" aria-label="Hover or focus to view details">
+        <div class="tooltip-circle" data-tooltip-text={prediction.details} role="tooltip">
+          <span class="tooltip-target">i</span>
+        </div>
+      </div>
+    {/if}
+    {#if prediction.correct_eventually}
+      <div
+        class="tooltip-wrapper correct-eventually"
+        aria-label="This incorrect prediction became correct in the future. Hover or focus to see details"
+      >
+        <div
+          class="tooltip-circle"
+          data-tooltip-text={`Correct eventually: ${prediction.correct_eventually}`}
+          role="tooltip"
+        >
+          <span class="tooltip-target" aria-describedby="">&#x2713;</span>
+        </div>
+      </div>
+    {/if}
+  </p>
 </li>
 
 <style>
-  li .itemContents {
+  .item-contents {
     display: flex;
+  }
+
+  .item-contents p {
+    margin: 0;
+  }
+
+  .tooltip-wrapper {
+    display: inline-block;
+  }
+
+  .details .tooltip-circle {
+    background-color: #222;
+  }
+
+  .correct-eventually .tooltip-circle {
+    background-color: #040;
+  }
+
+  .tooltip-circle {
+    position: relative;
+    display: flex;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    color: white;
+    width: 17px;
+    height: 17px;
+    text-align: center;
+    margin: 0;
+    margin-left: 5px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .tooltip-circle::before {
+    content: attr(data-tooltip-text);
+    opacity: 0;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 1.2rem;
+
+    position: absolute;
+    z-index: 1;
+    bottom: 0px;
+    left: 50%;
+    transition: opacity 0.25s;
+    transform: translate(-50%, 100%);
+    pointer-events: none;
+  }
+
+  .tooltip-circle:hover::before,
+  .tooltip-circle:focus::before {
+    opacity: 0.99;
   }
 </style>
