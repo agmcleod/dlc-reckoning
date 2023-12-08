@@ -18,7 +18,7 @@ export function createPrediction(args?: Partial<Prediction>): Prediction {
     year: Math.floor(Math.random() * 9) + 2015,
     correct_eventually: '',
     prediction: `${faker.string.uuid()} ${faker.lorem.sentences(2)}`,
-    details: faker.lorem.sentence(12),
+    details: '',
     host,
     prediction_type: PredictionType.Bold,
     score: null,
