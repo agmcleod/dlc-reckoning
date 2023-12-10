@@ -40,3 +40,11 @@ test('contains predictions', async () => {
     await waitFor(() => expect(getByText(pr.prediction)).toBeInTheDocument())
   }
 })
+
+test('shows episode tidbit', async () => {
+  const { getByText } = render(Page, {
+    data: { year: 2019, episodeTidbit: 'This is a tidbit about the year', predictions: [] }
+  })
+
+  await waitFor(() => expect(getByText('This is a tidbit about the year')).toBeInTheDocument())
+})
