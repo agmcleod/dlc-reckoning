@@ -175,3 +175,75 @@ test('sets correct sum data for both hosts', async () => {
     }
   })
 })
+
+test('handles null scores', async () => {
+  const parentData: PredictionData = {
+    mostRecentYear: 2023,
+    data: {
+      2023: [
+        createPrediction({
+          host: Host.Christian,
+          prediction_type: PredictionType.CoolRanch,
+          score: Score.Incorrect
+        }),
+        createPrediction({
+          host: Host.Jeff,
+          prediction_type: PredictionType.CoolRanch,
+          score: Score.Incorrect
+        }),
+        createPrediction({
+          host: Host.Christian,
+          prediction_type: PredictionType.CoolRanch,
+          score: null
+        })
+      ]
+    }
+  }
+
+  const data = await load({ parent: () => Promise.resolve(parentData) })
+
+  expect(data).toEqual({
+    [Host.Jeff]: {
+      bold: {
+        total: 0,
+        correct: 0,
+        partial: 0,
+        incorrect: 0
+      },
+      coolRanch: {
+        total: 1,
+        correct: 0,
+        partial: 0,
+        incorrect: 1
+      },
+      total: {
+        total: 1,
+        correct: 0,
+        partial: 0,
+        incorrect: 1,
+        correctEventually: 0
+      }
+    },
+    [Host.Christian]: {
+      bold: {
+        total: 0,
+        correct: 0,
+        partial: 0,
+        incorrect: 0
+      },
+      coolRanch: {
+        total: 1,
+        correct: 0,
+        partial: 0,
+        incorrect: 1
+      },
+      total: {
+        total: 1,
+        correct: 0,
+        partial: 0,
+        incorrect: 1,
+        correctEventually: 0
+      }
+    }
+  })
+})

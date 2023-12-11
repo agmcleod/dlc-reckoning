@@ -2,7 +2,6 @@ import { Host } from '$lib/types/host.js'
 import type { Prediction } from '$lib/types/prediction.js'
 import { PredictionType } from '$lib/types/predictionType.js'
 import { Score } from '$lib/types/score.js'
-import { separatePredictionsList } from '$lib/utils/separatePredictionsList.js'
 import type { StatisticsData, ScoreTypeValues } from './types.js'
 
 function increaseBasedOnType(typeValues: ScoreTypeValues, record: Prediction) {
@@ -17,6 +16,8 @@ function increaseBasedOnType(typeValues: ScoreTypeValues, record: Prediction) {
     case Score.Partial:
       typeValues.partial += 1
       break
+    default:
+      throw new Error(`invalid score ${record.score}`)
   }
 }
 
@@ -66,6 +67,9 @@ export async function load({ parent }): Promise<StatisticsData> {
   for (const year of Object.keys(predictionsData.data)) {
     const predictionsForYear = predictionsData.data[year]
     for (const record of predictionsForYear) {
+      if (record.score === null) {
+        continue
+      }
       if (record.host === Host.Both) {
         if (record.prediction_type === PredictionType.Bold) {
           increaseBasedOnType(jeffBoldScoreTypeValues, record)
