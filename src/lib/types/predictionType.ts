@@ -1,4 +1,4 @@
 export enum PredictionType {
-  Bold,
-  CoolRanch
+  Bold = 'Bold',
+  CoolRanch = 'CoolRanch'
 }

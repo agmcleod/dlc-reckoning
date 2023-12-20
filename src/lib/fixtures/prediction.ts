@@ -6,9 +6,9 @@ import { Host } from '$lib/types/host'
 export function createPrediction(args?: Partial<Prediction>): Prediction {
   let host
   const hostChoice = Math.random()
-  if (hostChoice >= 0.95) {
-    host = Host.Both
-  } else if (hostChoice >= 0.45) {
+  if (hostChoice >= 0.66) {
+    host = Host.Lana
+  } else if (hostChoice >= 0.33) {
     host = Host.Christian
   } else {
     host = Host.Jeff

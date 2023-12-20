@@ -44,10 +44,19 @@ vi.mock('$lib/assets/data.json', () => {
       },
       {
         year: 2016,
-        prediction: 'P4',
+        prediction: 'P5',
         prediction_type: 'CoolRanch',
         host: 'Jeff',
         score: 'Incorrect',
+        correct_eventually: '',
+        details: ''
+      },
+      {
+        year: 2017,
+        prediction: 'P6',
+        prediction_type: 'Bold',
+        host: 'Lana',
+        score: 'Correct',
         correct_eventually: '',
         details: ''
       }
@@ -58,7 +67,7 @@ vi.mock('$lib/assets/data.json', () => {
 test('returns mapped prediction data', () => {
   const result = load()
 
-  expect(result.mostRecentYear).toEqual(2016)
+  expect(result.mostRecentYear).toEqual(2017)
   expect(result.data['2015']).toEqual([
     {
       year: 2015,
@@ -89,11 +98,12 @@ test('returns mapped prediction data', () => {
     }
   ])
   expect(result.data['2016']).toEqual([
+    // Both record gets duplicated into two
     {
       year: 2016,
       prediction: 'P4',
       prediction_type: PredictionType.CoolRanch,
-      host: Host.Both,
+      host: Host.Christian,
       score: Score.Correct,
       correct_eventually: '',
       details: ''
@@ -103,7 +113,28 @@ test('returns mapped prediction data', () => {
       prediction: 'P4',
       prediction_type: PredictionType.CoolRanch,
       host: Host.Jeff,
+      score: Score.Correct,
+      correct_eventually: '',
+      details: ''
+    },
+    {
+      year: 2016,
+      prediction: 'P5',
+      prediction_type: PredictionType.CoolRanch,
+      host: Host.Jeff,
       score: Score.Incorrect,
+      correct_eventually: '',
+      details: ''
+    }
+  ])
+
+  expect(result.data['2017']).toEqual([
+    {
+      year: 2017,
+      prediction: 'P6',
+      prediction_type: PredictionType.Bold,
+      host: Host.Lana,
+      score: Score.Correct,
       correct_eventually: '',
       details: ''
     }

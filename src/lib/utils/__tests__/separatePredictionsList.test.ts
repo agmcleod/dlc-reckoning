@@ -5,7 +5,12 @@ import { PredictionType } from '$lib/types/predictionType'
 
 test('splits the list properly', () => {
   const predictions = [
-    createPrediction({ host: Host.Both, prediction: 'B1', prediction_type: PredictionType.Bold }),
+    createPrediction({ host: Host.Jeff, prediction: 'B1', prediction_type: PredictionType.Bold }),
+    createPrediction({
+      host: Host.Christian,
+      prediction: 'B1',
+      prediction_type: PredictionType.Bold
+    }),
     createPrediction({ host: Host.Jeff, prediction: 'B2', prediction_type: PredictionType.Bold }),
     createPrediction({
       host: Host.Christian,
@@ -13,7 +18,12 @@ test('splits the list properly', () => {
       prediction_type: PredictionType.Bold
     }),
     createPrediction({
-      host: Host.Both,
+      host: Host.Jeff,
+      prediction: 'CR1',
+      prediction_type: PredictionType.CoolRanch
+    }),
+    createPrediction({
+      host: Host.Christian,
       prediction: 'CR1',
       prediction_type: PredictionType.CoolRanch
     }),
@@ -36,8 +46,18 @@ test('splits the list properly', () => {
 
   const separated = separatePredictionsList(predictions)
 
-  expect(separated.jeffBold.map((pr) => pr.prediction)).toEqual(['B1', 'B2'])
-  expect(separated.christianBold.map((pr) => pr.prediction)).toEqual(['B1', 'B3'])
-  expect(separated.jeffCoolRanch.map((pr) => pr.prediction)).toEqual(['CR1', 'CR2', 'CR3'])
-  expect(separated.christianCoolRanch.map((pr) => pr.prediction)).toEqual(['CR1', 'CR4'])
+  expect(separated[Host.Jeff][PredictionType.Bold].map((p) => p.prediction)).toEqual(['B1', 'B2'])
+  expect(separated[Host.Christian][PredictionType.Bold].map((p) => p.prediction)).toEqual([
+    'B1',
+    'B3'
+  ])
+  expect(separated[Host.Jeff][PredictionType.CoolRanch].map((p) => p.prediction)).toEqual([
+    'CR1',
+    'CR2',
+    'CR3'
+  ])
+  expect(separated[Host.Christian][PredictionType.CoolRanch].map((p) => p.prediction)).toEqual([
+    'CR1',
+    'CR4'
+  ])
 })

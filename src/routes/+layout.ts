@@ -3,13 +3,14 @@ import type { PredictionData } from './types'
 import { Host } from '$lib/types/host'
 import { Score } from '$lib/types/score'
 import { PredictionType } from '$lib/types/predictionType'
+import type { Prediction } from '$lib/types/prediction'
 
 export const prerender = process.env.NODE_ENV === 'production'
 
-const hostMap = {
+const hostMap: { [key: string]: Host } = {
   Christian: Host.Christian,
   Jeff: Host.Jeff,
-  Both: Host.Both
+  Lana: Host.Lana
 }
 
 const scoreMap = {
@@ -30,8 +31,8 @@ export function load(): PredictionData {
   }
 
   for (const record of predictionsData) {
-    const host = hostMap[record.host as keyof typeof hostMap]
-    if (host === undefined) {
+    const host = hostMap[record.host]
+    if (host === undefined && record.host !== 'Both') {
       throw new Error(`Invalid host: ${record.host}`)
     }
 
@@ -47,11 +48,12 @@ export function load(): PredictionData {
       throw new Error(`Invalid predictionType: ${record.prediction_type}`)
     }
 
-    const recordToAdd = {
+    const recordToAdd: Prediction = {
       ...record,
       prediction_type: predictionType,
-      host,
-      score
+      score,
+      // this is an initial value
+      host: Host.Jeff
     }
 
     if (!predictionData.data[recordToAdd.year]) {
@@ -59,7 +61,15 @@ export function load(): PredictionData {
       predictionData.mostRecentYear = Math.max(predictionData.mostRecentYear, recordToAdd.year)
     }
 
-    predictionData.data[recordToAdd.year].push(recordToAdd)
+    if (record.host === 'Both') {
+      Object.assign(recordToAdd, { host: Host.Christian })
+      predictionData.data[recordToAdd.year]!.push(recordToAdd)
+      const jeffRecordCopy = { ...recordToAdd, host: Host.Jeff }
+      predictionData.data[recordToAdd.year]!.push(jeffRecordCopy)
+    } else {
+      Object.assign(recordToAdd, { host })
+      predictionData.data[recordToAdd.year]!.push(recordToAdd)
+    }
   }
 
   return predictionData

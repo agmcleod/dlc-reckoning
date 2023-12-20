@@ -2,47 +2,40 @@ import { Host } from '$lib/types/host'
 import type { Prediction } from '$lib/types/prediction'
 import { PredictionType } from '$lib/types/predictionType'
 
+interface PredictionListByType {
+  [PredictionType.Bold]: Prediction[]
+  [PredictionType.CoolRanch]: Prediction[]
+}
+
 export interface SeparatedPredictionList {
-  jeffBold: Prediction[]
-  jeffCoolRanch: Prediction[]
-  christianBold: Prediction[]
-  christianCoolRanch: Prediction[]
+  [Host.Jeff]: PredictionListByType
+  [Host.Christian]: PredictionListByType
+  [Host.Lana]: PredictionListByType
+}
+
+export function createInitialSeparatedList(): SeparatedPredictionList {
+  return {
+    [Host.Jeff]: {
+      [PredictionType.Bold]: [],
+      [PredictionType.CoolRanch]: []
+    },
+    [Host.Christian]: {
+      [PredictionType.Bold]: [],
+      [PredictionType.CoolRanch]: []
+    },
+    [Host.Lana]: {
+      [PredictionType.Bold]: [],
+      [PredictionType.CoolRanch]: []
+    }
+  }
 }
 
 export function separatePredictionsList(predictionsForYear: Prediction[]): SeparatedPredictionList {
-  const jeffBold: Prediction[] = []
-  const jeffCoolRanch: Prediction[] = []
-  const christianBold: Prediction[] = []
-  const christianCoolRanch: Prediction[] = []
+  const separatedLists: SeparatedPredictionList = createInitialSeparatedList()
 
   for (const record of predictionsForYear) {
-    if (record.host === Host.Both) {
-      if (record.prediction_type === PredictionType.Bold) {
-        jeffBold.push(record)
-        christianBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        jeffCoolRanch.push(record)
-        christianCoolRanch.push(record)
-      }
-    } else if (record.host === Host.Christian) {
-      if (record.prediction_type === PredictionType.Bold) {
-        christianBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        christianCoolRanch.push(record)
-      }
-    } else if (record.host === Host.Jeff) {
-      if (record.prediction_type === PredictionType.Bold) {
-        jeffBold.push(record)
-      } else if (record.prediction_type === PredictionType.CoolRanch) {
-        jeffCoolRanch.push(record)
-      }
-    }
+    separatedLists[record.host][record.prediction_type].push(record)
   }
 
-  return {
-    jeffBold,
-    jeffCoolRanch,
-    christianBold,
-    christianCoolRanch
-  }
+  return separatedLists
 }

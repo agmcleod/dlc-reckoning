@@ -1,21 +1,19 @@
 <script lang="ts">
   import type { PredictionData } from './types'
   import PredictionsSection from '$lib/components/PredictionsSection.svelte'
-  import { separatePredictionsList } from '$lib/utils/separatePredictionsList'
+  import {
+    createInitialSeparatedList,
+    separatePredictionsList
+  } from '$lib/utils/separatePredictionsList'
   import type { SeparatedPredictionList } from '$lib/utils/separatePredictionsList'
   import type { Prediction } from '$lib/types/prediction'
 
   export let data: PredictionData
 
   let predictionsForYear: Prediction[] = []
-  $: predictionsForYear = data.data[data.mostRecentYear]
+  $: predictionsForYear = data.data[data.mostRecentYear] || []
 
-  let predictionsSet: SeparatedPredictionList = {
-    jeffBold: [],
-    jeffCoolRanch: [],
-    christianBold: [],
-    christianCoolRanch: []
-  }
+  let predictionsSet: SeparatedPredictionList = createInitialSeparatedList()
 
   $: predictionsSet = separatePredictionsList(predictionsForYear)
 </script>
@@ -27,10 +25,14 @@
 <h1>{data.mostRecentYear} Predictions</h1>
 <section class="description">
   <p>
-    The <a href="https://www.patreon.com/dlcpod">DLC</a> video game podcast is a weekly show hosted
-    by Jeff Cannata and Christian Spicer. They cover gaming news, new releases, and have a guest on
-    each week to share other perspectives. At the beginning of each year, the two hosts go over
-    their major predictions in gaming for the coming year. They pick a number of <em>Bold</em>
+    The <a href="https://www.patreon.com/dlcpod">DLC</a> video game podcast is a weekly show hosted by
+    Jeff Cannata and Christian Spicer. They cover gaming news, new releases, and have a guest on each
+    week to share other perspectives. At the beginning of each year, the two hosts go over their major
+    predictions in gaming for the coming year.
+  </p>
+  <p>
+    Starting in 2024 they invited their friend & third chair of DLC Lana Bachynski to join them in
+    their predictions extravaganza. They pick a number of <strong>Bold</strong>
     predictions. Which are their maybe unlikely predictions, but still possible. And then they really
     go bananas with their <em>Cool Ranch</em> predictions. Which are completely off the wall
     predictions of what will happen in the coming year. Some might even say they've gone too far. In
@@ -44,9 +46,4 @@
   </p>
 </section>
 
-<PredictionsSection
-  jeffBold={predictionsSet.jeffBold}
-  jeffCoolRanch={predictionsSet.jeffCoolRanch}
-  christianBold={predictionsSet.christianBold}
-  christianCoolRanch={predictionsSet.christianCoolRanch}
-/>
+<PredictionsSection separatePredictionsList={predictionsSet} />

@@ -18,6 +18,7 @@ enum Host {
     Christian,
     Jeff,
     Both,
+    Lana,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
