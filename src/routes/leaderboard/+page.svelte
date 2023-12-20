@@ -1,4 +1,5 @@
 <script lang="ts">
+  import d3 from 'd3'
   import Profile from '$lib/components/Profile.svelte'
   import { Host } from '$lib/types/host'
   import type { StatisticsData, StatisticsHostData } from './types'
@@ -14,6 +15,10 @@
 
   $: jeffData = data[Host.Jeff]
   $: christianData = data[Host.Christian]
+
+  const chartContainer = document.querySelector('#leaderboard-chart-container')
+
+  d3.scaleLinear()
 </script>
 
 <svelte:head>
@@ -28,6 +33,8 @@
   </p>
   <p>Were they correct, or did they get rekt?</p>
 </section>
+
+<div id="leaderboard-chart-container"></div>
 
 <div class="leaderboard-container">
   <Profile host={Host.Jeff} />
