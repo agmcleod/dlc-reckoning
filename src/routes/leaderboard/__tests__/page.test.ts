@@ -30,20 +30,38 @@ function emptyHostData(): StatisticsHostData {
 
 function emptyScores(): StatisticsData {
   return {
-    [Host.Jeff]: emptyHostData(),
-    [Host.Christian]: emptyHostData(),
+    [Host.Jeff]: {
+      ...emptyHostData(),
+      total: {
+        total: 1,
+        correct: 0,
+        incorrect: 0,
+        partial: 0,
+        correctEventually: 0
+      }
+    },
+    [Host.Christian]: {
+      ...emptyHostData(),
+      total: {
+        total: 1,
+        correct: 0,
+        incorrect: 0,
+        partial: 0,
+        correctEventually: 0
+      }
+    },
     [Host.Lana]: emptyHostData()
   }
 }
 
 test('renders leaderboard header', async () => {
-  const { getByText } = render(Page, { data: emptyScores() })
+  const { getByText } = render(Page, { data: { leaderboard: emptyScores() } })
 
   await waitFor(() => expect(getByText(/leaderboard/i, { selector: 'h1' })).toBeInTheDocument())
 })
 
 test('contains portraits of the host', async () => {
-  const { getByText } = render(Page, { data: emptyScores() })
+  const { getByText } = render(Page, { data: { leaderboard: emptyScores() } })
 
   await waitFor(() => expect(getByText(/christian/i, { selector: 'h2' })).toBeInTheDocument())
   await waitFor(() => expect(getByText(/jeff/i, { selector: 'h2' })).toBeInTheDocument())
@@ -51,28 +69,6 @@ test('contains portraits of the host', async () => {
 
 test('contains valid scores', async () => {
   const data: StatisticsData = {
-    [Host.Christian]: {
-      bold: {
-        correct: 4,
-        incorrect: 2,
-        partial: 1,
-        total: 7
-      },
-      coolRanch: {
-        correct: 3,
-        incorrect: 3,
-        partial: 2,
-        total: 8
-      },
-      total: {
-        correct: 7,
-        incorrect: 5,
-        partial: 3,
-        total: 15,
-        correctEventually: 1
-      },
-      accuracyByYear: { 2015: 20, 2016: 40 }
-    },
     [Host.Jeff]: {
       bold: {
         correct: 0,
@@ -95,10 +91,32 @@ test('contains valid scores', async () => {
       },
       accuracyByYear: { 2015: 60, 2016: 30 }
     },
+    [Host.Christian]: {
+      bold: {
+        correct: 4,
+        incorrect: 2,
+        partial: 1,
+        total: 7
+      },
+      coolRanch: {
+        correct: 3,
+        incorrect: 3,
+        partial: 2,
+        total: 8
+      },
+      total: {
+        correct: 7,
+        incorrect: 5,
+        partial: 3,
+        total: 15,
+        correctEventually: 1
+      },
+      accuracyByYear: { 2015: 20, 2016: 40 }
+    },
     [Host.Lana]: emptyHostData()
   }
 
-  const { findAllByTestId } = render(Page, { data })
+  const { findAllByTestId } = render(Page, { data: { leaderboard: data } })
 
   const totalScoreSections = await findAllByTestId('total-scores')
   expect(totalScoreSections.length).toEqual(2)

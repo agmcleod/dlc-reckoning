@@ -1,24 +1,123 @@
 <script lang="ts">
-  import d3 from 'd3'
-  import Profile from '$lib/components/Profile.svelte'
+  import { onMount } from 'svelte'
   import { Host } from '$lib/types/host'
+  import * as d3 from 'd3'
+  import Profile from '$lib/components/Profile.svelte'
   import type { StatisticsData, StatisticsHostData } from './types'
 
-  export let data: StatisticsData
+  export let data: { leaderboard: StatisticsData }
 
   function asPercent(value: number): string {
     return `${Math.round(value * 1000) / 10}%`
   }
 
-  let jeffData: StatisticsHostData
-  let christianData: StatisticsHostData
+  let chartContainer: HTMLElement
 
-  $: jeffData = data[Host.Jeff]
-  $: christianData = data[Host.Christian]
+  let hostDataCollection: Array<{ host: Host; data: StatisticsHostData }> = []
 
-  const chartContainer = document.querySelector('#leaderboard-chart-container')
+  for (const host of Object.keys(data.leaderboard)) {
+    const dataForHost = data.leaderboard[host as Host]
+    if (dataForHost.total.total > 0) {
+      hostDataCollection.push({ host: host as Host, data: dataForHost })
+    }
+  }
 
-  d3.scaleLinear()
+  onMount(() => {
+    // we use Jeff's year accuracy to get list of years
+    const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map(
+      (y) => new Date(parseInt(y), 0, 1)
+    )
+    const width = 1000
+    const height = 300
+
+    const marginTop = 20
+    const marginRight = 30
+    const marginBottom = 30
+    const marginLeft = 40
+
+    const x = d3
+      .scaleUtc()
+      .domain(d3.extent(years, (d) => d) as any)
+      .range([marginLeft, width - marginRight])
+    const y = d3
+      .scaleLinear()
+      .domain([0, 100])
+      .range([height - marginBottom, marginTop])
+
+    const svg = d3
+      .create('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('viewBox', [0, 0, width, height])
+      .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
+
+    // add x-axis
+    svg
+      .append('g')
+      .attr('transform', `translate(0,${height - marginBottom})`)
+      .call(
+        d3
+          .axisBottom(x)
+          .ticks(width / 80)
+          .tickSizeOuter(0)
+      )
+
+    // Add the y-axis, remove the domain line, add grid lines and a label.
+    svg
+      .append('g')
+      .attr('transform', `translate(${marginLeft},0)`)
+      .call(d3.axisLeft(y))
+      // .call((g) => g.select('.domain').remove())
+      .call((g) =>
+        g
+          .selectAll('.tick line')
+          .clone()
+          .attr('x2', width - marginLeft - marginRight)
+          .attr('stroke-opacity', 0.1)
+      )
+      .call((g) =>
+        g
+          .append('text')
+          .attr('x', -marginLeft)
+          .attr('y', 10)
+          .attr('fill', 'currentColor')
+          .attr('text-anchor', 'start')
+          .text('Correct %')
+      )
+
+    const line = d3.line()
+
+    for (const host of Object.keys(data.leaderboard)) {
+      const hostVal = host as Host
+      const hostData = data.leaderboard[hostVal]
+
+      svg
+        .append('path')
+        .attr('fill', 'none')
+        .attr('stroke', hostVal === Host.Jeff ? '#008' : '#aa0')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .style('mix-blend-mode', 'multiply')
+        .attr(
+          'd',
+          line(
+            Object.keys(hostData.accuracyByYear).map((year) => {
+              return [x(new Date(parseInt(year), 0, 1)), y(hostData.accuracyByYear[year]!), host]
+            }) as any // the types doesnt allow [number, number, string], but examples show this
+          )
+        )
+    }
+
+    // Add an invisible layer for the interactive tip.
+    const dot = svg.append('g').attr('display', 'none')
+
+    dot.append('circle').attr('r', 2.5)
+
+    dot.append('text').attr('text-anchor', 'middle').attr('y', -8)
+
+    chartContainer.append(svg.node()!)
+  })
 </script>
 
 <svelte:head>
@@ -34,127 +133,74 @@
   <p>Were they correct, or did they get rekt?</p>
 </section>
 
-<div id="leaderboard-chart-container"></div>
+<div bind:this={chartContainer}></div>
 
 <div class="leaderboard-container">
-  <Profile host={Host.Jeff} />
-  <div class="total-scores" data-testid="total-scores">
-    <ul>
-      <li class="correct" data-testid="correct-predictions">
-        <span>Correct Predictions</span>
-        <span>{asPercent(jeffData.total.correct / jeffData.total.total)}</span>
-      </li>
-      <li class="incorrect" data-testid="incorrect-predictions">
-        <span>Rekt Predictions</span>
-        <span>{asPercent(jeffData.total.incorrect / jeffData.total.total)}</span>
-      </li>
-      <li class="partial" data-testid="partial-predictions">
-        <span>Partially Correct Predictions</span>
-        <span>{asPercent(jeffData.total.partial / jeffData.total.total)}</span>
-      </li>
-      <li class="correct-eventually" data-testid="correct-eventually">
-        <span>Predictions That Became Correct</span>
-        <span>{asPercent(jeffData.total.correctEventually / jeffData.total.incorrect)}</span>
-      </li>
-    </ul>
-  </div>
-  <table class="break-down" data-testid="break-down">
-    <thead>
-      <tr>
-        <th>Grade</th>
-        <th>Bold</th>
-        <th>Cool Ranch</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="correct">
-        <td>Correct</td>
-        <td data-testid="correct-b">{asPercent(jeffData.bold.correct / jeffData.bold.total)}</td>
-        <td data-testid="correct-cr">
-          {asPercent(jeffData.coolRanch.correct / jeffData.coolRanch.total)}
-        </td>
-      </tr>
-      <tr class="incorrect">
-        <td>Rekt</td>
-        <td data-testid="incorrect-b">
-          {asPercent(jeffData.bold.incorrect / jeffData.bold.total)}
-        </td>
-        <td data-testid="incorrect-cr">
-          {asPercent(jeffData.coolRanch.incorrect / jeffData.coolRanch.total)}
-        </td>
-      </tr>
-      <tr class="partial">
-        <td>Partial</td>
-        <td data-testid="partial-b">
-          {asPercent(jeffData.bold.partial / jeffData.bold.total)}
-        </td>
-        <td data-testid="partial-cr">
-          {asPercent(jeffData.coolRanch.partial / jeffData.coolRanch.total)}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <Profile host={Host.Christian} />
-  <div class="total-scores" data-testid="total-scores">
-    <ul>
-      <li class="correct" data-testid="correct-predictions">
-        <span>Correct Predictions</span>
-        <span>{asPercent(christianData.total.correct / christianData.total.total)}</span>
-      </li>
-      <li class="incorrect" data-testid="incorrect-predictions">
-        <span>Rekt Predictions</span>
-        <span>{asPercent(christianData.total.incorrect / christianData.total.total)}</span>
-      </li>
-      <li class="partial" data-testid="partial-predictions">
-        <span>Partially Correct Predictions</span>
-        <span>{asPercent(christianData.total.partial / christianData.total.total)}</span>
-      </li>
-      <li class="correct-eventually" data-testid="correct-eventually">
-        <span>Predictions That Became Correct</span>
-        <span
-          >{asPercent(christianData.total.correctEventually / christianData.total.incorrect)}</span
-        >
-      </li>
-    </ul>
-  </div>
-  <table class="break-down" data-testid="break-down">
-    <thead>
-      <tr>
-        <th>Grade</th>
-        <th>Bold</th>
-        <th>Cool Ranch</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="correct">
-        <td>Correct</td>
-        <td data-testid="correct-b"
-          >{asPercent(christianData.bold.correct / christianData.bold.total)}</td
-        >
-        <td data-testid="correct-cr">
-          {asPercent(christianData.coolRanch.correct / christianData.coolRanch.total)}
-        </td>
-      </tr>
-      <tr class="incorrect">
-        <td>Rekt</td>
-        <td data-testid="incorrect-b">
-          {asPercent(christianData.bold.incorrect / christianData.bold.total)}
-        </td>
-        <td data-testid="incorrect-cr">
-          {asPercent(christianData.coolRanch.incorrect / christianData.coolRanch.total)}
-        </td>
-      </tr>
-      <tr class="partial">
-        <td>Partial</td>
-        <td data-testid="partial-b">
-          {asPercent(christianData.bold.partial / christianData.bold.total)}
-        </td>
-        <td data-testid="partial-cr">
-          {asPercent(christianData.coolRanch.partial / christianData.coolRanch.total)}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  {#each hostDataCollection as hostData}
+    <Profile host={hostData.host} />
+    <div class="total-scores" data-testid="total-scores">
+      <ul>
+        <li class="correct" data-testid="correct-predictions">
+          <span>Correct Predictions</span>
+          <span>{asPercent(hostData.data.total.correct / hostData.data.total.total)}</span>
+        </li>
+        <li class="incorrect" data-testid="incorrect-predictions">
+          <span>Rekt Predictions</span>
+          <span>{asPercent(hostData.data.total.incorrect / hostData.data.total.total)}</span>
+        </li>
+        <li class="partial" data-testid="partial-predictions">
+          <span>Partially Correct Predictions</span>
+          <span>{asPercent(hostData.data.total.partial / hostData.data.total.total)}</span>
+        </li>
+        <li class="correct-eventually" data-testid="correct-eventually">
+          <span>Predictions That Became Correct</span>
+          <span
+            >{asPercent(
+              hostData.data.total.correctEventually / hostData.data.total.incorrect
+            )}</span
+          >
+        </li>
+      </ul>
+    </div>
+    <table class="break-down" data-testid="break-down">
+      <thead>
+        <tr>
+          <th>Grade</th>
+          <th>Bold</th>
+          <th>Cool Ranch</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="correct">
+          <td>Correct</td>
+          <td data-testid="correct-b"
+            >{asPercent(hostData.data.bold.correct / hostData.data.bold.total)}</td
+          >
+          <td data-testid="correct-cr">
+            {asPercent(hostData.data.coolRanch.correct / hostData.data.coolRanch.total)}
+          </td>
+        </tr>
+        <tr class="incorrect">
+          <td>Rekt</td>
+          <td data-testid="incorrect-b">
+            {asPercent(hostData.data.bold.incorrect / hostData.data.bold.total)}
+          </td>
+          <td data-testid="incorrect-cr">
+            {asPercent(hostData.data.coolRanch.incorrect / hostData.data.coolRanch.total)}
+          </td>
+        </tr>
+        <tr class="partial">
+          <td>Partial</td>
+          <td data-testid="partial-b">
+            {asPercent(hostData.data.bold.partial / hostData.data.bold.total)}
+          </td>
+          <td data-testid="partial-cr">
+            {asPercent(hostData.data.coolRanch.partial / hostData.data.coolRanch.total)}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {/each}
 </div>
 
 <style>

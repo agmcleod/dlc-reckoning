@@ -175,7 +175,7 @@ test('sets correct sum data for the hosts', async () => {
   }
   const data = await load({ parent: () => Promise.resolve(parentData) })
 
-  expect(data).toEqual({
+  expect(data.leaderboard).toEqual({
     [Host.Jeff]: {
       bold: {
         total: 4,
@@ -280,7 +280,7 @@ test('handles null scores', async () => {
 
   const data = await load({ parent: () => Promise.resolve(parentData) })
 
-  expect(data).toEqual({
+  expect(data.leaderboard).toEqual({
     [Host.Jeff]: {
       bold: {
         total: 0,

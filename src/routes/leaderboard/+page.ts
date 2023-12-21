@@ -56,7 +56,7 @@ function createInitialStatisticsHostData(): StatisticsHostData {
   }
 }
 
-export async function load({ parent }): Promise<StatisticsData> {
+export async function load({ parent }): Promise<{ leaderboard: StatisticsData }> {
   const predictionsData = await parent()
 
   const returnData: StatisticsData = {
@@ -124,5 +124,5 @@ export async function load({ parent }): Promise<StatisticsData> {
     }
   }
 
-  return returnData
+  return { leaderboard: returnData }
 }
