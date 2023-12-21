@@ -1,4 +1,3 @@
-import type { Prediction } from '$lib/types/prediction'
 import { Host } from '$lib/types/host'
 
 export interface ScoreTypeValues {
@@ -16,9 +15,13 @@ export interface StatisticsHostData {
   total: TotalScoreTypeValues
   bold: ScoreTypeValues
   coolRanch: ScoreTypeValues
+  accuracyByYear: {
+    [year: string]: number
+  }
 }
 
 export interface StatisticsData {
   [Host.Jeff]: StatisticsHostData
   [Host.Christian]: StatisticsHostData
+  [Host.Lana]: StatisticsHostData
 }

@@ -2,7 +2,12 @@ import { Host } from '$lib/types/host.js'
 import type { Prediction } from '$lib/types/prediction.js'
 import { PredictionType } from '$lib/types/predictionType.js'
 import { Score } from '$lib/types/score.js'
-import type { StatisticsData, ScoreTypeValues } from './types.js'
+import type { StatisticsData, StatisticsHostData, ScoreTypeValues } from './types.js'
+
+interface HostCorrectCount {
+  correct: number
+  total: number
+}
 
 function increaseBasedOnType(typeValues: ScoreTypeValues, record: Prediction) {
   typeValues.total += 1
@@ -30,103 +35,94 @@ function sumValues(bold: ScoreTypeValues, coolRanch: ScoreTypeValues): ScoreType
   }
 }
 
+function createInitialScoreTypeValues(): ScoreTypeValues {
+  return {
+    correct: 0,
+    incorrect: 0,
+    partial: 0,
+    total: 0
+  }
+}
+
+function createInitialStatisticsHostData(): StatisticsHostData {
+  return {
+    accuracyByYear: {},
+    bold: createInitialScoreTypeValues(),
+    coolRanch: createInitialScoreTypeValues(),
+    total: {
+      ...createInitialScoreTypeValues(),
+      correctEventually: 0
+    }
+  }
+}
+
 export async function load({ parent }): Promise<StatisticsData> {
   const predictionsData = await parent()
 
-  const christianBoldScoreTypeValues: ScoreTypeValues = {
-    correct: 0,
-    incorrect: 0,
-    partial: 0,
-    total: 0
+  const returnData: StatisticsData = {
+    [Host.Jeff]: createInitialStatisticsHostData(),
+    [Host.Christian]: createInitialStatisticsHostData(),
+    [Host.Lana]: createInitialStatisticsHostData()
   }
-
-  const christianCoolRanchScoreTypeValues: ScoreTypeValues = {
-    correct: 0,
-    incorrect: 0,
-    partial: 0,
-    total: 0
-  }
-
-  const jeffBoldScoreTypeValues: ScoreTypeValues = {
-    correct: 0,
-    incorrect: 0,
-    partial: 0,
-    total: 0
-  }
-
-  const jeffCoolRanchScoreTypeValues: ScoreTypeValues = {
-    correct: 0,
-    incorrect: 0,
-    partial: 0,
-    total: 0
-  }
-
-  let jeffCorrectEventuallyCount = 0
-  let christianCorrectEventuallyCount = 0
 
   for (const year of Object.keys(predictionsData.data)) {
-    const predictionsForYear = predictionsData.data[year]
+    const predictionsForYear = predictionsData.data[year]!
+    const scoresByYear: {
+      [Host.Christian]: HostCorrectCount
+      [Host.Jeff]: HostCorrectCount
+      [Host.Lana]: HostCorrectCount
+    } = {
+      [Host.Jeff]: {
+        correct: 0,
+        total: 0
+      },
+      [Host.Christian]: {
+        correct: 0,
+        total: 0
+      },
+      [Host.Lana]: {
+        correct: 0,
+        total: 0
+      }
+    }
     for (const record of predictionsForYear) {
       if (record.score === null) {
         continue
       }
-      if (record.host === Host.Both) {
-        if (record.prediction_type === PredictionType.Bold) {
-          increaseBasedOnType(jeffBoldScoreTypeValues, record)
-          increaseBasedOnType(christianBoldScoreTypeValues, record)
-        } else if (record.prediction_type === PredictionType.CoolRanch) {
-          increaseBasedOnType(jeffCoolRanchScoreTypeValues, record)
-          increaseBasedOnType(christianCoolRanchScoreTypeValues, record)
-        }
 
-        if (record.score === Score.Incorrect && record.correct_eventually) {
-          jeffCorrectEventuallyCount += 1
-          christianCorrectEventuallyCount += 1
-        }
-      } else if (record.host === Host.Christian) {
-        if (record.prediction_type === PredictionType.Bold) {
-          increaseBasedOnType(christianBoldScoreTypeValues, record)
-        } else if (record.prediction_type === PredictionType.CoolRanch) {
-          increaseBasedOnType(christianCoolRanchScoreTypeValues, record)
-        }
-        if (record.score === Score.Incorrect && record.correct_eventually) {
-          christianCorrectEventuallyCount += 1
-        }
-      } else if (record.host === Host.Jeff) {
-        if (record.prediction_type === PredictionType.Bold) {
-          increaseBasedOnType(jeffBoldScoreTypeValues, record)
-        } else if (record.prediction_type === PredictionType.CoolRanch) {
-          increaseBasedOnType(jeffCoolRanchScoreTypeValues, record)
-        }
-        if (record.score === Score.Incorrect && record.correct_eventually) {
-          jeffCorrectEventuallyCount += 1
-        }
+      if (record.score === Score.Correct) {
+        scoresByYear[record.host].correct += 1
+      }
+
+      scoresByYear[record.host].total += 1
+
+      const dataForHost = returnData[record.host]
+      if (record.prediction_type === PredictionType.Bold) {
+        increaseBasedOnType(dataForHost.bold, record)
+      } else if (record.prediction_type === PredictionType.CoolRanch) {
+        increaseBasedOnType(dataForHost.coolRanch, record)
+      }
+      if (record.score === Score.Incorrect && record.correct_eventually) {
+        dataForHost.total.correctEventually += 1
+      }
+    }
+
+    for (const host of Object.keys(scoresByYear)) {
+      const scoresForHostForTheYear = scoresByYear[host as Host]
+      const score = (scoresForHostForTheYear.correct / scoresForHostForTheYear.total) * 100
+      if (!isNaN(score)) {
+        returnData[host as Host].accuracyByYear[year] = score
       }
     }
   }
 
-  const jeffTotalScoreValues = sumValues(jeffBoldScoreTypeValues, jeffCoolRanchScoreTypeValues)
-  const christianTotalScoreValues = sumValues(
-    christianBoldScoreTypeValues,
-    christianCoolRanchScoreTypeValues
-  )
-
-  return {
-    [Host.Jeff]: {
-      bold: jeffBoldScoreTypeValues,
-      coolRanch: jeffCoolRanchScoreTypeValues,
-      total: {
-        ...jeffTotalScoreValues,
-        correctEventually: jeffCorrectEventuallyCount
-      }
-    },
-    [Host.Christian]: {
-      bold: christianBoldScoreTypeValues,
-      coolRanch: christianCoolRanchScoreTypeValues,
-      total: {
-        ...christianTotalScoreValues,
-        correctEventually: christianCorrectEventuallyCount
-      }
+  for (const host of Object.keys(returnData)) {
+    const hostData = returnData[host as Host]
+    hostData.total = {
+      ...hostData.total,
+      ...sumValues(hostData.bold, hostData.coolRanch)
     }
   }
+
+  return returnData
 }
