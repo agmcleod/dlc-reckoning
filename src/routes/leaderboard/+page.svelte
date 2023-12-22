@@ -7,8 +7,6 @@
 
   export let data: { leaderboard: StatisticsData }
 
-  type Datum = { z: string | null }
-
   function asPercent(value: number): string {
     return `${Math.round(value * 1000) / 10}%`
   }
@@ -95,7 +93,7 @@
     let points: (string | number)[][] = []
 
     const pathNodes: Array<{
-      path: d3.Selection<SVGPathElement, Datum, null, undefined>
+      path: d3.Selection<SVGPathElement, undefined, null, undefined>
       host: string
     }> = []
 
@@ -118,7 +116,7 @@
         .append('path')
         .attr('fill', 'none')
         // set this so it has the right datum type
-        .datum<Datum>({ z: '' })
+        // .datum<Datum>({ z: '' })
         .attr('stroke', hostVal === Host.Jeff ? '#008' : '#aa0')
         .attr('stroke-width', 1.5)
         .attr('stroke-linejoin', 'round')
@@ -143,8 +141,15 @@
       for (const { path, host } of pathNodes) {
         if (host === k) {
           path
-            .style('stroke', ({ z }: { z: string | null }) => (z === k ? null : '#ddd'))
-            .filter(({ z }: { z: string | null }) => z === k)
+            .style('stroke', () => {
+              return null
+            })
+            .raise()
+        } else {
+          path
+            .style('stroke', () => {
+              return '#ddd'
+            })
             .raise()
         }
       }
