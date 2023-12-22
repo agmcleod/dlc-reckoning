@@ -7,6 +7,8 @@
 
   export let data: { leaderboard: StatisticsData }
 
+  type Datum = { z: string | null }
+
   function asPercent(value: number): string {
     return `${Math.round(value * 1000) / 10}%`
   }
@@ -49,7 +51,10 @@
       .attr('width', width)
       .attr('height', height)
       .attr('viewBox', [0, 0, width, height])
-      .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
+      .attr(
+        'style',
+        `max-width: 100%; height: auto; overflow: visible; font: 10px Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;`
+      )
 
     // add x-axis
     svg
@@ -87,13 +92,33 @@
 
     const line = d3.line()
 
+    let points: (string | number)[][] = []
+
+    const pathNodes: Array<{
+      path: d3.Selection<SVGPathElement, Datum, null, undefined>
+      host: string
+    }> = []
+
     for (const host of Object.keys(data.leaderboard)) {
       const hostVal = host as Host
       const hostData = data.leaderboard[hostVal]
 
-      svg
+      const hostPoints = Object.keys(hostData.accuracyByYear).map((year) => {
+        return [
+          x(new Date(parseInt(year), 0, 1)),
+          y(hostData.accuracyByYear[year]!),
+          host,
+          hostData.accuracyByYear[year]!
+        ]
+      })
+
+      points = points.concat(hostPoints)
+
+      const path = svg
         .append('path')
         .attr('fill', 'none')
+        // set this so it has the right datum type
+        .datum<Datum>({ z: '' })
         .attr('stroke', hostVal === Host.Jeff ? '#008' : '#aa0')
         .attr('stroke-width', 1.5)
         .attr('stroke-linejoin', 'round')
@@ -102,19 +127,59 @@
         .attr(
           'd',
           line(
-            Object.keys(hostData.accuracyByYear).map((year) => {
-              return [x(new Date(parseInt(year), 0, 1)), y(hostData.accuracyByYear[year]!), host]
-            }) as any // the types doesnt allow [number, number, string], but examples show this
+            hostPoints as any // the types doesnt allow [number, number, string], but examples show this
           )
         )
+
+      pathNodes.push({ path, host })
     }
+
+    function pointermoved(event: Event) {
+      const [xm, ym] = d3.pointer(event)
+      const i = d3.leastIndex(points, ([x, y]) =>
+        Math.hypot((x as number) - xm, (y as number) - ym)
+      )
+      const [x, y, k, percent] = points[i!]!
+      for (const { path, host } of pathNodes) {
+        if (host === k) {
+          path
+            .style('stroke', ({ z }: { z: string | null }) => (z === k ? null : '#ddd'))
+            .filter(({ z }: { z: string | null }) => z === k)
+            .raise()
+        }
+      }
+
+      const labelString = `${k} ${Math.round((percent as number) * 10) / 10}%`
+      dot.attr('transform', `translate(${x},${y})`)
+      dot.select('text').text(labelString)
+    }
+
+    function pointerentered() {
+      for (const { path } of pathNodes) {
+        path.style('mix-blend-mode', null).style('stroke', '#ddd')
+      }
+      dot.attr('display', null)
+    }
+
+    function pointerleft() {
+      for (const { path } of pathNodes) {
+        path.style('mix-blend-mode', 'multiply').style('stroke', null)
+      }
+      dot.attr('display', 'none')
+    }
+
+    svg
+      .on('pointerenter', pointerentered)
+      .on('pointermove', pointermoved)
+      .on('pointerleave', pointerleft)
+      .on('touchstart', (event) => event.preventDefault())
 
     // Add an invisible layer for the interactive tip.
     const dot = svg.append('g').attr('display', 'none')
 
     dot.append('circle').attr('r', 2.5)
 
-    dot.append('text').attr('text-anchor', 'middle').attr('y', -8)
+    dot.append('text').attr('text-anchor', 'middle').style('font-size', '1rem').attr('y', -8)
 
     chartContainer.append(svg.node()!)
   })
