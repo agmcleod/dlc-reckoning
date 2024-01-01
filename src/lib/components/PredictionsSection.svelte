@@ -42,6 +42,7 @@
         coolRanchPredictions={separatePredictionsList[hostAsHostKey(host)][
           PredictionType.CoolRanch
         ]}
+        host={hostAsHostKey(host)}
       />
     {/if}
   {/each}

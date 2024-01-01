@@ -1,16 +1,18 @@
 <script lang="ts">
+  import type { Host } from '$lib/types/host'
   import type { Prediction } from '$lib/types/prediction'
   import PredictionItem from './PredictionItem.svelte'
 
   export let boldPredictions: Prediction[] = []
   export let coolRanchPredictions: Prediction[] = []
+  export let host: keyof typeof Host
 </script>
 
 <div class="bold" data-testid="bold-section">
   <h3>Bold</h3>
   <ol>
     {#each boldPredictions as prediction, index}
-      <PredictionItem {prediction} {index} />
+      <PredictionItem {prediction} {index} {host} />
     {/each}
   </ol>
 </div>
@@ -19,7 +21,7 @@
   <h3>Cool Ranch</h3>
   <ol>
     {#each coolRanchPredictions as prediction, index}
-      <PredictionItem {prediction} isCoolRanch {index} />
+      <PredictionItem {prediction} {index} {host} />
     {/each}
   </ol>
 </div>

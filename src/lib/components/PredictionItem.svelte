@@ -3,10 +3,17 @@
   import type { IconDetails } from '$lib/types/iconDetails'
   import { Score } from '$lib/types/score'
   import Icon from './icons/Icon.svelte'
+  import { Host } from '$lib/types/host'
+  import CoffeeCrisp from './icons/CoffeeCrisp.svelte'
+  import CoolRanchChip from './icons/CoolRanchChip.svelte'
+  import { PredictionType } from '$lib/types/predictionType'
 
   export let prediction: Prediction
-  export let isCoolRanch = false
   export let index: number
+  export let host: keyof typeof Host
+
+  let isCoolRanch = false
+  $: isCoolRanch = prediction.prediction_type === PredictionType.CoolRanch
 
   const descriptions = {
     [Score.Correct]: 'Correct prediction',
@@ -53,7 +60,16 @@
 </script>
 
 <li class="item-contents">
-  <div class="iconWrapper" data-testid="icon-wrapper">
+  <div class="icon-wrapper" data-testid="icon-wrapper">
+    {#if isCoolRanch}
+      <div class="coolranch-icon-wrapper" data-testid="coolranch-icon-wrapper">
+        {#if host === Host.Lana}
+          <CoffeeCrisp />
+        {:else}
+          <CoolRanchChip />
+        {/if}
+      </div>
+    {/if}
     {#if iconName}
       <Icon name={iconName} fill={iconColor} ariaLabel={description} includeShadow={isCoolRanch} />
     {:else}
@@ -105,6 +121,17 @@
 
   .correct-eventually .tooltip-circle {
     background-color: #040;
+  }
+
+  .icon-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .coolranch-icon-wrapper {
+    width: 24px;
+    margin-right: 4px;
   }
 
   .tooltip-circle {

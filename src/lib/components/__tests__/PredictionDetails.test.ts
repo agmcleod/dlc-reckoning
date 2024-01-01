@@ -3,6 +3,7 @@ import { render, waitFor, within } from '@testing-library/svelte'
 import PredictionDetails from '../PredictionDetails.svelte'
 import { createPrediction } from '../../fixtures/prediction'
 import { PredictionType } from '../../types/predictionType'
+import { Host } from '$lib/types/host'
 
 test('renders bold & cool ranch items', async () => {
   const boldPredictions = [
@@ -18,7 +19,8 @@ test('renders bold & cool ranch items', async () => {
   ]
   const { getByText, findByTestId } = render(PredictionDetails, {
     boldPredictions,
-    coolRanchPredictions
+    coolRanchPredictions,
+    host: Host.Jeff
   })
 
   await waitFor(() => expect(getByText(/bold/i, { selector: 'h3' })).toBeInTheDocument())
