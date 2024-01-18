@@ -25,10 +25,10 @@
 <h1>{data.mostRecentYear} Predictions</h1>
 <section class="description">
   <p>
-    The <a href="https://www.patreon.com/dlcpod">DLC</a> video game podcast is a weekly show hosted by
-    Jeff Cannata and Christian Spicer. They cover gaming news, new releases, and have a guest on each
-    week to share other perspectives. At the beginning of each year, the two hosts go over their major
-    predictions in gaming for the coming year.
+    The <a href="https://www.dlcpod.com/">DLC</a> video game podcast is a weekly show hosted by Jeff
+    Cannata and Christian Spicer. They cover gaming news, new releases, and have a guest on each week
+    to share other perspectives. At the beginning of each year, the two hosts go over their major predictions
+    in gaming for the coming year.
   </p>
   <p>
     Starting in 2024 they invited their friend & third chair of DLC Lana Bachynski to join them in

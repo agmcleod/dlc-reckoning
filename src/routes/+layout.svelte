@@ -42,7 +42,7 @@
       DLC Reckoning is a fan-made, non-official site created by
       <a href="https://agmprojects.com">Aaron McLeod</a>. Not affiliated with the DLC Podcast. To
       learn more and support the podcast, check them out
-      <a href="https://www.patreon.com/dlcpod/posts">here</a>
+      <a href="https://www.dlcpod.com/">here</a>
     </p>
   </div>
 </div>
