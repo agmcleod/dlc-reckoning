@@ -1,6 +1,6 @@
-import autoAdapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
-import staticAdapter from '@sveltejs/adapter-static';
+import autoAdapter from '@sveltejs/adapter-auto'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import staticAdapter from '@sveltejs/adapter-static'
 
 const adapter = process.env.NODE_ENV === 'production' ? staticAdapter() : autoAdapter()
 
@@ -16,6 +16,6 @@ const config = {
     // See https://kit.svelte.dev/docs/adapters for more information about adapters.
     adapter: adapter
   }
-};
+}
 
-export default config;
+export default config
