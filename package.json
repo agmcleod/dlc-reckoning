@@ -16,7 +16,7 @@
     "@faker-js/faker": "^8.3.1",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-static": "^2.0.3",
-    "@sveltejs/kit": "^1.27.4",
+    "@sveltejs/kit": "^1.30.4",
     "@sveltejs/vite-plugin-svelte": "^2.5.3",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/svelte": "^4.0.5",
