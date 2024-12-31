@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { Host } from '$lib/types/host'
+  import { Host } from '$lib/types/host'
   import Profile from '$lib/components/Profile.svelte'
   import type { StatisticsData, StatisticsHostData } from './types'
-  import { setupChart } from './chart'
+  import { setupChart, LINE_COLOUR_MAP } from './chart'
 
   export let data: { leaderboard: StatisticsData }
 
@@ -47,7 +47,14 @@
   </p>
 </section>
 
-<div bind:this={chartContainer}></div>
+<div class="chart" bind:this={chartContainer}></div>
+<div>
+  <ul class="chart-legend">
+    <li><span style={`background: ${LINE_COLOUR_MAP[Host.Christian]}`}></span>Christian</li>
+    <li><span style={`background: ${LINE_COLOUR_MAP[Host.Jeff]}`}></span>Jeff</li>
+    <li><span style={`background: ${LINE_COLOUR_MAP[Host.Lana]}`}></span>Lana</li>
+  </ul>
+</div>
 
 <div class="leaderboard-container">
   {#each hostDataCollection as hostData}
@@ -178,6 +185,32 @@
 
   .break-down th {
     text-align: left;
+  }
+
+  .chart-legend {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 0 42px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .chart-legend li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+  }
+
+  .chart-legend span {
+    width: 15px;
+    height: 15px;
+    display: block;
+    border-radius: 50%;
+  }
+
+  .chart {
+    overflow-x: scroll;
   }
 
   @media screen and (max-width: 600px) {

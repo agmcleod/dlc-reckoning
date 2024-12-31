@@ -63,7 +63,7 @@
   <div class="icon-wrapper" data-testid="icon-wrapper">
     {#if isCoolRanch}
       <div class="coolranch-icon-wrapper" data-testid="coolranch-icon-wrapper">
-        {#if host === Host.Lana}
+        {#if index % 2 !== 0}
           <CoffeeCrisp />
         {:else}
           <CoolRanchChip />

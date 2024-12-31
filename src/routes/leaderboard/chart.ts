@@ -13,19 +13,11 @@ type PathNodes = Array<{
 
 type Dot = d3.Selection<SVGGElement, undefined, null, undefined>
 
-const LINE_COLOUR_MAP = {
+export const LINE_COLOUR_MAP = {
   [Host.Christian]: '#e41a1c',
   [Host.Jeff]: '#377eb8',
   [Host.Lana]: '#4daf4a'
 }
-
-const HOST_X_OFFSET_MAP = {
-  [Host.Jeff]: -12,
-  [Host.Christian]: 0,
-  [Host.Lana]: 12
-}
-
-const BAR_WIDTH = 10
 
 export function setupChart(data: { leaderboard: StatisticsData }, chartContainer: HTMLElement) {
   // we use Jeff's year accuracy to get list of years
@@ -59,10 +51,7 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
     .attr('width', width)
     .attr('height', height)
     .attr('viewBox', [0, 0, width, height])
-    .attr(
-      'style',
-      `max-width: 100%; height: auto; overflow: visible; font: 10px Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;`
-    )
+    .attr('style', `font: 10px Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;`)
 
   // add x-axis
   svg
@@ -117,7 +106,7 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
   }
 
   const barDataArray = Object.keys(barData).map((year) => {
-    return { year, data: barData[year] }
+    return { year, data: barData[year]! }
   })
 
   svg
@@ -152,6 +141,21 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
       'label',
       (d) => `${d.value?.host} got ${Math.round(d.value?.accuracy || 0)}% for ${d.value?.year}`
     )
+
+  for (const { year, data } of barDataArray) {
+    for (const hostData of data) {
+      svg
+        .append('g')
+        .attr(
+          'transform',
+          `translate(${xSubgroup(hostData.host)! + x(year)!},${y(hostData.accuracy) - 10})`
+        )
+        .append('text')
+        .attr('text-anchor', 'left')
+        .style('font-size', '0.6rem')
+        .text(`${Math.round(hostData.accuracy)}%`)
+    }
+  }
 
   chartContainer.append(svg.node()!)
 }
