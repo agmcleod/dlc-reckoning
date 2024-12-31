@@ -73,7 +73,7 @@ test('renders correct eventually tooltip', async () => {
   )
 })
 
-test('renders dorito chip for jeff cool ranch', async () => {
+test('renders dorito chip for even items', async () => {
   const prediction = createPrediction({
     score: null,
     host: Host.Jeff,
@@ -92,16 +92,16 @@ test('renders dorito chip for jeff cool ranch', async () => {
   expect(svg!.getAttribute('aria-label')).toContain('dorito')
 })
 
-test('renders coffee crisp for lana cool ranch', async () => {
+test('renders coffee crisp for odd numbers', async () => {
   const prediction = createPrediction({
     score: null,
-    host: Host.Lana,
+    host: Host.Jeff,
     prediction_type: PredictionType.CoolRanch
   })
 
   const { findByTestId } = render(PredictionItem, {
     prediction,
-    index: 0,
+    index: 1,
     host: prediction.host
   })
 
