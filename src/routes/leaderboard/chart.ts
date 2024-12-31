@@ -2,8 +2,12 @@ import { Host } from '$lib/types/host'
 import * as d3 from 'd3'
 import type { StatisticsData } from './types'
 
+type PathEl =
+  | d3.Selection<SVGPathElement, undefined, null, undefined>
+  | d3.Selection<SVGRectElement, (number | string)[], SVGSVGElement, undefined>
+
 type PathNodes = Array<{
-  path: d3.Selection<SVGPathElement, undefined, null, undefined>
+  path: PathEl
   host: string
 }>
 
@@ -102,24 +106,45 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
 
     points = points.concat(hostPoints)
 
-    const path = svg
-      .append('path')
-      .attr('fill', 'none')
-      // set this so it has the right datum type
-      // .datum<Datum>({ z: '' })
-      .attr('stroke', LINE_COLOUR_MAP[hostVal])
-      .attr('stroke-width', hostPoints.length === 1 ? 5 : 1.5)
-      .attr('stroke-linejoin', 'round')
-      .attr('stroke-linecap', 'round')
-      .style('mix-blend-mode', 'multiply')
-      .attr(
-        'd',
-        line(
-          hostPoints as any // the types doesnt allow [number, number, string], but examples show this
-        )
-      )
+    if (hostVal === Host.Lana) {
+      const rect = svg
+        .selectAll('mybar')
+        .data(hostPoints)
+        .enter()
+        .append('rect')
+        .attr('x', function (d) {
+          return (d[0] as number) - 3
+        })
+        .attr('y', function (d) {
+          return d[1] as number
+        })
+        .attr('width', 6)
+        .attr('height', function (d) {
+          console.log(y(d[1] as any))
+          return height - (d[1] as number) - marginBottom
+        })
+        .attr('fill', LINE_COLOUR_MAP[hostVal])
 
-    pathNodes.push({ path, host })
+      pathNodes.push({ path: rect, host })
+    } else {
+      const path = svg
+        .append('path')
+        .attr('fill', 'none')
+        // set this so it has the right datum type
+        // .datum<Datum>({ z: '' })
+        .attr('stroke', LINE_COLOUR_MAP[hostVal])
+        .attr('stroke-width', hostPoints.length === 1 ? 5 : 1.5)
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .style('mix-blend-mode', 'multiply')
+        .attr(
+          'd',
+          line(
+            hostPoints as any // the types doesnt allow [number, number, string], but examples show this
+          )
+        )
+      pathNodes.push({ path, host })
+    }
   }
 
   // Add an invisible layer for the interactive tip.
@@ -136,6 +161,14 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
     .on('touchstart', (event) => event.preventDefault())
 
   chartContainer.append(svg.node()!)
+}
+
+function restyleEl(el: PathEl, stroke: string | null) {
+  if (el['raise']) {
+    el.style('stroke', () => {
+      return stroke
+    }).raise()
+  }
 }
 
 function pointermoved(points: (string | number)[][], pathNodes: PathNodes, dot: Dot) {
