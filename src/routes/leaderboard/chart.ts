@@ -9,6 +9,12 @@ type PathNodes = Array<{
 
 type Dot = d3.Selection<SVGGElement, undefined, null, undefined>
 
+const LINE_COLOUR_MAP = {
+  [Host.Christian]: '#aa0',
+  [Host.Jeff]: '#008',
+  [Host.Lana]: '#a00'
+}
+
 export function setupChart(data: { leaderboard: StatisticsData }, chartContainer: HTMLElement) {
   // we use Jeff's year accuracy to get list of years
   const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map(
@@ -101,8 +107,8 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
       .attr('fill', 'none')
       // set this so it has the right datum type
       // .datum<Datum>({ z: '' })
-      .attr('stroke', hostVal === Host.Jeff ? '#008' : '#aa0')
-      .attr('stroke-width', 1.5)
+      .attr('stroke', LINE_COLOUR_MAP[hostVal])
+      .attr('stroke-width', hostPoints.length === 1 ? 5 : 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .style('mix-blend-mode', 'multiply')

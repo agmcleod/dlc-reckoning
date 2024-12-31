@@ -25,7 +25,7 @@
   const hostNameMap = {
     [Host.Christian]: 'Christian "Spicetradamus" Spicer',
     [Host.Jeff]: 'Jeff "Cannasticator" Cannata',
-    [Host.Lana]: 'Lana "Lanavoyant" Bachynski'
+    [Host.Lana]: 'Lana "Crystal Ballchynski" Bachynski'
   }
 
   $: hostImage = hostImageMap[host]

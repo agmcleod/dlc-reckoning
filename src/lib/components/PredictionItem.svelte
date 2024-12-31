@@ -59,7 +59,7 @@
   $: prediction, setIconDetails()
 </script>
 
-<li class="item-contents">
+<li class="prediction">
   <div class="icon-wrapper" data-testid="icon-wrapper">
     {#if isCoolRanch}
       <div class="coolranch-icon-wrapper" data-testid="coolranch-icon-wrapper">
@@ -76,7 +76,7 @@
       {index + 1}.&nbsp;
     {/if}
   </div>
-  <p>
+  <div class="prediction-contents">
     {prediction.prediction}
     {#if prediction.details}
       <div class="tooltip-wrapper details" aria-label="Hover or focus to view details">
@@ -95,19 +95,19 @@
           data-tooltip-text={`Correct eventually: ${prediction.correct_eventually}`}
           role="tooltip"
         >
-          <span class="tooltip-target" aria-describedby="">&#x2713;</span>
+          <span class="tooltip-target">&#x2713;</span>
         </div>
       </div>
     {/if}
-  </p>
+  </div>
 </li>
 
 <style>
-  .item-contents {
+  .prediction {
     display: flex;
   }
 
-  .item-contents p {
+  .prediction-contents {
     margin: 0;
   }
 
