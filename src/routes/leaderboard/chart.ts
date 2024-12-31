@@ -14,16 +14,22 @@ type PathNodes = Array<{
 type Dot = d3.Selection<SVGGElement, undefined, null, undefined>
 
 const LINE_COLOUR_MAP = {
-  [Host.Christian]: '#aa0',
-  [Host.Jeff]: '#008',
-  [Host.Lana]: '#a00'
+  [Host.Christian]: '#e41a1c',
+  [Host.Jeff]: '#377eb8',
+  [Host.Lana]: '#4daf4a'
 }
+
+const HOST_X_OFFSET_MAP = {
+  [Host.Jeff]: -12,
+  [Host.Christian]: 0,
+  [Host.Lana]: 12
+}
+
+const BAR_WIDTH = 10
 
 export function setupChart(data: { leaderboard: StatisticsData }, chartContainer: HTMLElement) {
   // we use Jeff's year accuracy to get list of years
-  const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map(
-    (y) => new Date(parseInt(y), 0, 1)
-  )
+  const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map((y) => y)
   const width = 1000
   const height = 300
 
@@ -32,14 +38,21 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
   const marginBottom = 30
   const marginLeft = 40
 
+  const subgroups = [Host.Christian, Host.Jeff, Host.Lana]
+
   const x = d3
-    .scaleUtc()
-    .domain(d3.extent(years, (d) => d) as any)
+    .scaleBand()
+    .domain(years)
     .range([marginLeft, width - marginRight])
+    .padding(0.2)
   const y = d3
     .scaleLinear()
     .domain([0, 100])
     .range([height - marginBottom, marginTop])
+
+  const xSubgroup = d3.scaleBand().domain(subgroups).range([0, x.bandwidth()]).padding(0.05)
+
+  const colour = d3.scaleOrdinal().domain(subgroups).range(Object.values(LINE_COLOUR_MAP))
 
   const svg = d3
     .create('svg')
@@ -67,7 +80,6 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
     .append('g')
     .attr('transform', `translate(${marginLeft},0)`)
     .call(d3.axisLeft(y))
-    // .call((g) => g.select('.domain').remove())
     .call((g) =>
       g
         .selectAll('.tick line')
@@ -85,133 +97,61 @@ export function setupChart(data: { leaderboard: StatisticsData }, chartContainer
         .text('Correct %')
     )
 
-  const line = d3.line()
-
-  let points: (string | number)[][] = []
-
-  const pathNodes: PathNodes = []
+  const barData: { [year: string]: Array<{ host: string; year: string; accuracy: number }> } = {}
 
   for (const host of Object.keys(data.leaderboard)) {
     const hostVal = host as Host
     const hostData = data.leaderboard[hostVal]
 
-    const hostPoints = Object.keys(hostData.accuracyByYear).map((year) => {
-      return [
-        x(new Date(parseInt(year), 0, 1)),
-        y(hostData.accuracyByYear[year]!),
+    for (const year of Object.keys(hostData.accuracyByYear)) {
+      if (!barData[year]) {
+        barData[year] = []
+      }
+
+      barData[year].push({
         host,
-        hostData.accuracyByYear[year]!
-      ]
-    })
-
-    points = points.concat(hostPoints)
-
-    if (hostVal === Host.Lana) {
-      const rect = svg
-        .selectAll('mybar')
-        .data(hostPoints)
-        .enter()
-        .append('rect')
-        .attr('x', function (d) {
-          return (d[0] as number) - 3
-        })
-        .attr('y', function (d) {
-          return d[1] as number
-        })
-        .attr('width', 6)
-        .attr('height', function (d) {
-          console.log(y(d[1] as any))
-          return height - (d[1] as number) - marginBottom
-        })
-        .attr('fill', LINE_COLOUR_MAP[hostVal])
-
-      pathNodes.push({ path: rect, host })
-    } else {
-      const path = svg
-        .append('path')
-        .attr('fill', 'none')
-        // set this so it has the right datum type
-        // .datum<Datum>({ z: '' })
-        .attr('stroke', LINE_COLOUR_MAP[hostVal])
-        .attr('stroke-width', hostPoints.length === 1 ? 5 : 1.5)
-        .attr('stroke-linejoin', 'round')
-        .attr('stroke-linecap', 'round')
-        .style('mix-blend-mode', 'multiply')
-        .attr(
-          'd',
-          line(
-            hostPoints as any // the types doesnt allow [number, number, string], but examples show this
-          )
-        )
-      pathNodes.push({ path, host })
+        year,
+        accuracy: hostData.accuracyByYear[year]!
+      })
     }
   }
 
-  // Add an invisible layer for the interactive tip.
-  const dot: Dot = svg.append('g').attr('display', 'none')
-
-  dot.append('circle').attr('r', 2.5)
-
-  dot.append('text').attr('text-anchor', 'middle').style('font-size', '1rem').attr('y', -8)
+  const barDataArray = Object.keys(barData).map((year) => {
+    return { year, data: barData[year] }
+  })
 
   svg
-    .on('pointerenter', pointerentered(pathNodes, dot))
-    .on('pointermove', pointermoved(points, pathNodes, dot))
-    .on('pointerleave', pointerleft(pathNodes, dot))
-    .on('touchstart', (event) => event.preventDefault())
+    .append('g')
+    .selectAll('g')
+    .data(barDataArray)
+    .enter()
+    .append('g')
+    .attr('transform', (d) => {
+      return `translate(${x(d.year)},0)`
+    })
+    .selectAll('rect')
+    .data((d) => {
+      return subgroups
+        .filter((key: Host) => {
+          return d.data?.find((row) => row.host === key && row.year === d.year)
+        })
+        .map((key: Host) => ({ key, value: d.data?.find((row) => row.host === key) }))
+    })
+    .enter()
+    .append('rect')
+    .attr('x', (d) => xSubgroup(d.key)!)
+    .attr('y', function (d) {
+      return y(d.value?.accuracy!)
+    })
+    .attr('width', xSubgroup.bandwidth())
+    .attr('height', function (d) {
+      return height - y(d.value?.accuracy!) - marginBottom
+    })
+    .attr('fill', (d) => colour(d.key) as string)
+    .attr(
+      'label',
+      (d) => `${d.value?.host} got ${Math.round(d.value?.accuracy || 0)}% for ${d.value?.year}`
+    )
 
   chartContainer.append(svg.node()!)
-}
-
-function restyleEl(el: PathEl, stroke: string | null) {
-  if (el['raise']) {
-    el.style('stroke', () => {
-      return stroke
-    }).raise()
-  }
-}
-
-function pointermoved(points: (string | number)[][], pathNodes: PathNodes, dot: Dot) {
-  return (event: Event) => {
-    const [xm, ym] = d3.pointer(event)
-    const i = d3.leastIndex(points, ([x, y]) => Math.hypot((x as number) - xm, (y as number) - ym))
-    const [x, y, k, percent] = points[i!]!
-    for (const { path, host } of pathNodes) {
-      if (host === k) {
-        path
-          .style('stroke', () => {
-            return null
-          })
-          .raise()
-      } else {
-        path
-          .style('stroke', () => {
-            return '#ddd'
-          })
-          .raise()
-      }
-    }
-
-    const labelString = `${k} ${Math.round((percent as number) * 10) / 10}%`
-    dot.attr('transform', `translate(${x},${y})`)
-    dot.select('text').text(labelString)
-  }
-}
-
-function pointerentered(pathNodes: PathNodes, dot: Dot) {
-  return () => {
-    for (const { path } of pathNodes) {
-      path.style('mix-blend-mode', null).style('stroke', '#ddd')
-    }
-    dot.attr('display', null)
-  }
-}
-
-function pointerleft(pathNodes: PathNodes, dot: Dot) {
-  return () => {
-    for (const { path } of pathNodes) {
-      path.style('mix-blend-mode', 'multiply').style('stroke', null)
-    }
-    dot.attr('display', 'none')
-  }
 }
