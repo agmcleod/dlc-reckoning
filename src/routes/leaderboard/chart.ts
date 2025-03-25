@@ -2,17 +2,6 @@ import { Host } from '$lib/types/host'
 import * as d3 from 'd3'
 import type { StatisticsData } from './types'
 
-type PathEl =
-  | d3.Selection<SVGPathElement, undefined, null, undefined>
-  | d3.Selection<SVGRectElement, (number | string)[], SVGSVGElement, undefined>
-
-type PathNodes = Array<{
-  path: PathEl
-  host: string
-}>
-
-type Dot = d3.Selection<SVGGElement, undefined, null, undefined>
-
 export const LINE_COLOUR_MAP = {
   [Host.Christian]: '#e41a1c',
   [Host.Jeff]: '#377eb8',
@@ -20,6 +9,7 @@ export const LINE_COLOUR_MAP = {
 }
 
 export function setupChart(data: { leaderboard: StatisticsData }, chartContainer: HTMLElement) {
+  console.log('SETUP CHART')
   // we use Jeff's year accuracy to get list of years
   const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map((y) => y)
   const width = 1000

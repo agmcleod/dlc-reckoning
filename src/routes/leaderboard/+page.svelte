@@ -25,6 +25,7 @@
   }
 
   onMount(() => {
+    console.log('mount')
     setupChart(data, chartContainer)
   })
 </script>
