@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { Host } from '$lib/types/host'
   import Profile from '$lib/components/Profile.svelte'
   import type { StatisticsData, StatisticsHostData } from './types'
   import { setupChart, LINE_COLOUR_MAP } from './chart'
 
-  export let data: { leaderboard: StatisticsData }
+  const { data } = $props<{ data: { leaderboard: StatisticsData } }>()
 
   function asPercent(value: number): string {
     return `${Math.round(value * 1000) / 10}%`
@@ -24,7 +23,7 @@
     }
   }
 
-  onMount(() => {
+  $effect(() => {
     setupChart(data, chartContainer)
   })
 </script>

@@ -7,11 +7,11 @@
   } from '$lib/utils/separatePredictionsList'
   import type { SeparatedPredictionList } from '$lib/utils/separatePredictionsList'
 
-  export let data: SingleYearPredictionData
+  const { data } = $props<{ data: SingleYearPredictionData }>()
 
-  let predictionsSet: SeparatedPredictionList = createInitialSeparatedList()
-
-  $: predictionsSet = separatePredictionsList(data.predictions)
+  const predictionsSet: SeparatedPredictionList = $derived(
+    separatePredictionsList(data.predictions || [])
+  )
 </script>
 
 <svelte:head>
