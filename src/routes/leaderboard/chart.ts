@@ -9,7 +9,6 @@ export const LINE_COLOUR_MAP = {
 }
 
 export function setupChart(data: { leaderboard: StatisticsData }, chartContainer: HTMLElement) {
-  console.log('SETUP CHART')
   // we use Jeff's year accuracy to get list of years
   const years = Object.keys(data.leaderboard[Host.Jeff].accuracyByYear).map((y) => y)
   const width = 1000
