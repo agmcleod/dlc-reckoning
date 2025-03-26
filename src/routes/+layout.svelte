@@ -26,9 +26,9 @@
       <div class="nav-menu-button" role="button" aria-label="Toggle navigation menu"></div>
     </label>
     <ul class="nav-menu">
-      <li><a href="/leaderboard" on:click={toggleOffNavMenu}>Leaderboard</a></li>
+      <li><a href="/leaderboard" onclick={toggleOffNavMenu}>Leaderboard</a></li>
       {#each years as year}
-        <li><a href="/{year}" on:click={toggleOffNavMenu}>{year}</a></li>
+        <li><a href="/{year}" onclick={toggleOffNavMenu}>{year}</a></li>
       {/each}
     </ul>
   </div>

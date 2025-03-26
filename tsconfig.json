@@ -12,7 +12,7 @@
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
-    "types": ["vitest/globals", "vitest-dom/extend-expect"],
+    "types": ["vitest/globals", "vitest-dom/extend-expect", "node"],
     "noUncheckedIndexedAccess": true
   }
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

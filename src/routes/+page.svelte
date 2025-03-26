@@ -8,14 +8,13 @@
   import type { SeparatedPredictionList } from '$lib/utils/separatePredictionsList'
   import type { Prediction } from '$lib/types/prediction'
 
-  export let data: PredictionData
+  const { data } = $props<{ data: PredictionData }>()
 
-  let predictionsForYear: Prediction[] = []
-  $: predictionsForYear = data.data[data.mostRecentYear] || []
+  let predictionsForYear: Prediction[] = $derived(data.data[data.mostRecentYear] || [])
 
-  let predictionsSet: SeparatedPredictionList = createInitialSeparatedList()
-
-  $: predictionsSet = separatePredictionsList(predictionsForYear)
+  let predictionsSet: SeparatedPredictionList = $derived(
+    separatePredictionsList(predictionsForYear)
+  )
 </script>
 
 <svelte:head>
