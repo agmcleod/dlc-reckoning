@@ -8,7 +8,7 @@ Once done so, you can compile & run the data loader package:
 
 ```bash
 cd data-loader
-cargo run -- '..\DLC The Reckoning - Predictions.csv' ..\src\lib\assets\data.json
+cargo run -- '../DLC The Reckoning - Predictions.csv' ../src/lib/assets/data.json
 ```
 
 ## Developing
